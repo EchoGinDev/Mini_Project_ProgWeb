@@ -1,2 +1,3 @@
 # Mini_Project_ProgWeb
-Ini adalah tugas mini_Project Progweb dilarang keras push tanpa membuat branch
+Ini adalah tugas mini_Project Progweb. 
+Dilarang keras melakukan push tanpa membuat **Branch!!**
