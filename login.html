@@ -1,14 +1,15 @@
+<!-- Halaman Login -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job Portal - Login</title>
+    <title>Login</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Job Portal</h1>
+        <h1>Job Finder</h1>
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -16,24 +17,41 @@
             </ul>
         </nav>
     </header>
-
+    
     <main>
-        <section class="login-form">
-            <h2>Login</h2>
-            <form>
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-
-                <button type="submit">Login</button>
-            </form>
-        </section>
+        <section class="login-container">
+            <div class="login-box">
+                <img src="logo.png" alt="Bootstrap Brain Logo" class="login-logo">
+                <h2>Sign in to your account</h2>
+                <form>
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <div class="login-options">
+                        <label class="checkbox">
+                            <input type="checkbox"> Keep me logged in
+                        </label>
+                        <a href="#" class="forgot-password">lupa password?</a>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">Log in</button>
+                </form>
+        
+                <p>Don't have an account? <a href="#">Sign up</a></p>
+            </div>
+        </section>              
     </main>
-
+    
     <footer>
-        <p>&copy; 2024 Job Portal. All rights reserved.</p>
+        <p>&copy; 2025 Echo1</p>
     </footer>
+    
 </body>
 </html>
