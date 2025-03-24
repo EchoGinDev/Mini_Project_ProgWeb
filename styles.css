@@ -165,7 +165,7 @@ footer {
 /* Style input dan label */
 .input-group {
     text-align: left;
-    margin-bottom: 15px;
+    margin: 11px;
 }
 
 .input-group label {
@@ -176,8 +176,9 @@ footer {
 }
 
 .input-group input {
+
     width: 100%;
-    padding: 12px;
+    padding: 13px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 14px;
