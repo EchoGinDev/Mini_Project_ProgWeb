@@ -73,7 +73,7 @@ main {
 }
 
 .job-item img {
-    max-width: 100px;
+    max-width: 200px;
     margin-bottom: 10px;
 }
 
@@ -84,10 +84,6 @@ main {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.job-detail img {
-    max-width: 100px;
-    margin-bottom: 10px;
-}
 
 .application-form {
     background-color: #fff;
