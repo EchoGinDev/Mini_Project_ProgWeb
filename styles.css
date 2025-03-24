@@ -165,7 +165,7 @@ footer {
 /* Style input dan label */
 .input-group {
     text-align: left;
-    margin: 11px;
+    margin: 10px;
 }
 
 .input-group label {
@@ -175,14 +175,16 @@ footer {
     color: #555;
 }
 
+/* Style input*/
 .input-group input {
-
+    background-color: #cecece;
     width: 100%;
-    padding: 13px;
+    padding: 13px 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 14px;
     outline: none;
+    align-items: center;
     transition: border-color 0.3s ease-in-out;
 }
 
@@ -193,10 +195,10 @@ footer {
 /* Style checkbox dan link */
 .login-options {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     font-size: 14px;
-    margin-bottom: 15px;
+    margin-bottom: 14px;
+    padding: 13px 5px;
 }
 
 .checkbox {
@@ -206,6 +208,7 @@ footer {
 }
 
 .forgot-password {
+    padding-left: 1%;
     text-decoration: none;
     color: #007bff;
 }
@@ -216,9 +219,9 @@ footer {
 
 /* Tombol login */
 .login-btn {
-    width: 100%;
-    padding: 12px;
     background-color: #007bff;
+    width: 100%;
+    padding: 13px 5px;
     color: white;
     border: none;
     border-radius: 5px;
@@ -229,4 +232,5 @@ footer {
 
 .login-btn:hover {
     background-color: #0056b3;
+    padding: 13px 5px;
 }
