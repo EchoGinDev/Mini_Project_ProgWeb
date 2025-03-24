@@ -35,6 +35,17 @@ main {
     padding: 20px;
 }
 
+.sambutan h2{
+    color: #ad0707;
+    font-family: 'Courier New', Courier, monospace;
+
+}
+
+#sambutan p{
+    color: #333;
+    font-family: 'Courier New', Courier, monospace;
+}
+
 .search-section {
     margin-bottom: 20px;
 }
@@ -48,7 +59,7 @@ main {
 .search-section input {
     padding: 10px;
     flex: 1;
-    min-width: 200px;
+    min-width: 100px;
 }
 
 .search-section button {
