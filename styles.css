@@ -142,13 +142,13 @@ footer {
 }
 
 .login-box {
+    border-radius: 8px;
     background-color: #fff;
     padding: 40px;
-    border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 30%;
     text-align: center;
-    max-width: 350px;
-    width: 100%;
+    cursor: pointer;
 }
 
 .login-logo {
@@ -177,14 +177,14 @@ footer {
 
 /* Style input*/
 .input-group input {
-    background-color: #cecece;
     width: 100%;
-    padding: 13px 5px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
     border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
+    border-radius: 4px;
+    box-sizing: border-box;
     outline: none;
-    align-items: center;
     transition: border-color 0.3s ease-in-out;
 }
 
@@ -207,6 +207,7 @@ footer {
     gap: 5px;
 }
 
+/* hyperlink lupa password */
 .forgot-password {
     padding-left: 1%;
     text-decoration: none;
@@ -219,20 +220,33 @@ footer {
 
 /* Tombol login */
 .login-btn {
-    background-color: #007bff;
     width: 100%;
-    padding: 13px 5px;
+    background-color: #007bff;
     color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    align-items: left;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background 0.3s ease-in-out;
 }
 
 .login-btn:hover {
     background-color: #0056b3;
-    padding: 13px 5px;
-    
 }
+
+/* Tombol hyperlink detail */
+.detail-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 14px 25px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    border-radius: 1px;
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+.detail-btn:hover {
+    background-color: #0056b3;
+  }
