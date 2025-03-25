@@ -6,29 +6,7 @@ body {
 }
 
 /* header {
-    background-color: #5e17eb;
-    color: #fff;
-    padding: 10px 0;
-    text-align: center;
-}
 
-header h1 {
-    margin: 0;
-}
-
-nav ul {
-    list-style: none;
-    padding: 0;
-}
-
-nav ul li {
-    display: inline;
-    margin: 0 15px;
-}
-
-nav ul li a {
-    color: #fff;
-    text-decoration: none;
 } */
 
 main {
@@ -286,8 +264,8 @@ footer {
     justify-content: space-between;
     align-items: center;
     padding: 5px 10px;
-    background-color: #8c52ff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #902bf5;
+    box-shadow: 0 4px 6px rgb(106, 106, 106);
 }
 .logo {
     width: 12%;
@@ -310,16 +288,16 @@ footer {
     transition: 0.3s;
 }
 .nav-links a:hover {
-    color: #1abc9c;
+    color: #e6eceb;
 }
 .contact-btn {
-    background-color: #0096c7;
+    background-color: #35c2a6;
     color: white;
     padding: 8px 15px;
-    border-radius: 20px;
+    border-radius: 2px;
     text-decoration: none;
     transition: 0.3s;
 }
 .contact-btn:hover {
-    background-color: #0077a7;
+    background-color: #30d1b1;
 }
