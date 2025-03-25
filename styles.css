@@ -5,8 +5,8 @@ body {
     background-color: #f4f4f4;
 }
 
-header {
-    background-color: #333;
+/* header {
+    background-color: #5e17eb;
     color: #fff;
     padding: 10px 0;
     text-align: center;
@@ -29,7 +29,7 @@ nav ul li {
 nav ul li a {
     color: #fff;
     text-decoration: none;
-}
+} */
 
 main {
     padding: 20px;
@@ -84,7 +84,7 @@ main {
 }
 
 .job-item img {
-    max-width: 200px;
+    max-width: 300px;
     margin-bottom: 10px;
 }
 
@@ -158,27 +158,30 @@ footer {
 }
 
 .login-logo {
-    max-width: 250px;
+    max-width: 300px;
     margin-bottom: 15px;
+    text-shadow: #161616;
 }
 
 .login-box h2 {
     margin-bottom: 10px;
     font-size: 20px;
-    color: #333;
+    color: #161616;
 }
 
 /* Style input dan label */
 .input-group {
     text-align: left;
-    margin: 10px;
+    margin: 5px;
 }
 
 .input-group label {
+    text-align: left;
     display: block;
-    font-size: 14px;
-    margin-bottom: 5px;
-    color: #555;
+    font-size: 18px;
+    margin-bottom: 3px;
+    color: #161616;
+    font-weight: bold;
 }
 
 /* Style input*/
@@ -274,3 +277,49 @@ footer {
 .lamar-btn:hover {
     background-color: #0056b3;
   }
+
+
+/*Navbar*/
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    background-color: #8c52ff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.logo {
+    width: 12%;
+    font-weight: bold;
+    margin-top: 10px;
+    gap: 20px;
+}
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+.nav-links li {
+    display: inline;
+}
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    transition: 0.3s;
+}
+.nav-links a:hover {
+    color: #1abc9c;
+}
+.contact-btn {
+    background-color: #0096c7;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+.contact-btn:hover {
+    background-color: #0077a7;
+}
