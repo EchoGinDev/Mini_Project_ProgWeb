@@ -44,14 +44,14 @@ main {
 
 .search-section button {
     padding: 10px 20px;
-    background-color: #47eaca;
+    background-color: #6610f2;
     color: #fff;
     border: none;
     cursor: pointer;
 }
 
 .search-section button:hover {
-    background-color: #30d1b1;
+    background-color: #590dd4;
 }
 
 .job-listings {
@@ -105,14 +105,14 @@ main {
 
 .application-form button {
     padding: 10px 20px;
-    background-color: #47eaca;
+    background-color: #6610f2;
     color: #fff;
     border: none;
     cursor: pointer;
 }
 
 footer {
-    background-color: #902bf5;
+    background-color: #201c24;
     color: #fff;
     text-align: center;
     padding: 1px 0;
@@ -211,7 +211,7 @@ footer {
 /* Tombol login */
 .login-btn {
     width: 100%;
-    background-color: #47eaca;
+    background-color: #6610f2;
     color: white;
     padding: 14px 20px;
     margin: 8px 0;
@@ -221,12 +221,12 @@ footer {
 }
 
 .login-btn:hover {
-    background-color: #30d1b1;
+    background-color: #590dd4;
 }
 
 /* Tombol hyperlink detail di halaman main */
 .detail-btn {
-    background-color: #47eaca;
+    background-color: #6610f2;
     color: white;
     padding: 14px 25px;
     text-align: center;
@@ -238,13 +238,13 @@ footer {
   }
   
 .detail-btn:hover {
-    background-color: #30d1b1;
+    background-color: #590dd4;
   }
 
 
 /* Tombol hyperlink lamar */
 .lamar-btn {
-    background-color: #47eaca;
+    background-color: #6610f2;
     color: white;
     padding: 14px 25px;
     text-align: center;
@@ -256,7 +256,7 @@ footer {
   }
   
 .lamar-btn:hover {
-    background-color: #30d1b1;
+    background-color: #590dd4;
   }
 
   /*Navbar*/
@@ -266,7 +266,7 @@ footer {
     justify-content: space-between;
     align-items: center;
     padding: 5px 10px;
-    background-color: #902bf5;
+    background-color: #201c24;
     box-shadow: 0 4px 6px rgb(106, 106, 106);
 }
 .logo {
@@ -293,7 +293,7 @@ footer {
     color: #e6eceb;
 }
 .contact-btn {
-    background-color: #47eaca;
+    background-color: #6610f2;
     color: white;
     padding: 8px 15px;
     border-radius: 2px;
@@ -301,5 +301,5 @@ footer {
     transition: 0.3s;
 }
 .contact-btn:hover {
-    background-color: #30d1b1;
+    background-color: #590dd4;
 }
