@@ -1,6 +1,32 @@
 <?php
 include 'koneksi.php';
+$nama_perusahaan = $_POST['nama_perusahaan'] ?? '';
+$kategori = $_POST['kategori'] ?? '';
+$lokasi = $_POST['lokasi'] ?? '';
+$jenis = $_POST['jenis'] ?? '';
+$gaji = $_POST['gaji'] ?? '';
 
+// Siapkan query dasar
+$query = "SELECT * FROM jobs WHERE 1=1";
+
+// Tambahkan filter jika ada input
+if ($nama_perusahaan !== '') {
+    $query .= " AND nama_perusahaan LIKE '%" . mysqli_real_escape_string($conn, $nama_perusahaan) . "%'";
+}
+if ($kategori !== '') {
+    $query .= " AND kategori LIKE '%" . mysqli_real_escape_string($conn, $kategori) . "%'";
+}
+if ($lokasi !== '') {
+    $query .= " AND lokasi LIKE '%" . mysqli_real_escape_string($conn, $lokasi) . "%'";
+}
+if ($jenis !== '') {
+    $query .= " AND jenis LIKE '%" . mysqli_real_escape_string($conn, $jenis) . "%'";
+}
+if ($gaji !== '') {
+    $query .= " AND gaji LIKE '%" . mysqli_real_escape_string($conn, $gaji) . "%'";
+}
+
+$result = mysqli_query($conn, $query);
 ?>
 
 <!DOCTYPE html>
@@ -28,13 +54,13 @@ include 'koneksi.php';
 <main>
     <section class="search-section">
         <h2>Cari Lowongan</h2>
-        <form>
-            <input type="text" placeholder="Nama Perusahaan">
-            <input type="text" placeholder="Kategori Pekerjaan">
-            <input type="text" placeholder="Lokasi">
-            <input type="text" placeholder="Jenis Pekerjaan">
-            <input type="text" placeholder="Rentang Gaji">
-            <button type="submit" disabled>Cari (Fitur Belum Tersedia)</button>
+        <form method="post" action="index.php">
+            <input type="text" name="nama_perusahaan" placeholder="Nama Perusahaan" value="<?= htmlspecialchars($nama_perusahaan) ?>">
+            <input type="text" name="kategori" placeholder="Kategori Pekerjaan" value="<?= htmlspecialchars($kategori) ?>">
+            <input type="text" name="lokasi" placeholder="Lokasi" value="<?= htmlspecialchars($lokasi) ?>">
+            <input type="text" name="jenis" placeholder="Jenis Pekerjaan" value="<?= htmlspecialchars($jenis) ?>">
+            <input type="text" name="gaji" placeholder="Rentang Gaji" value="<?= htmlspecialchars($gaji) ?>">
+            <button type="submit">Cari</button>
         </form>
     </section>
 
