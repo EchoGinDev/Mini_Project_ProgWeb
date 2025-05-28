@@ -1,16 +1,6 @@
 <?php
 include 'koneksi.php';
-if (isset($_GET['id'])) {
-    $id = intval($_GET['id']);
-    $result = mysqli_query($conn, "SELECT * FROM jobs WHERE id=$id");
-    if ($row = mysqli_fetch_assoc($result)) {
-        // tampilkan detail pekerjaan sesuai $row
-    } else {
-        echo "Lowongan tidak ditemukan.";
-    }
-} else {
-    echo "ID pekerjaan tidak diberikan.";
-}
+
 ?>
 
 <!DOCTYPE html>
