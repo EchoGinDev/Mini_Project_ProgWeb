@@ -15,7 +15,7 @@
             <ul class="nav-links">
                 <li><a href="#">About</a></li>
                 <li><a href="index.php">Home</a></li>
-                <li><a href="login.php" class="contact-btn">login</a></li>
+                <li><a href="login.php" class="contact-btn">Login</a></li>
             </ul>
         </nav>
     </header>

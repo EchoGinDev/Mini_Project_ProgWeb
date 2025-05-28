@@ -303,3 +303,35 @@ footer {
 .contact-btn:hover {
     background-color: #590dd4;
 }
+
+.detail-logo {
+            max-width: 200px;
+            max-height: 150px;
+            object-fit: contain;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+footer {
+            background-color: #1e1b23;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 50px;
+        }
+
+.apply-btn{
+    background-color: #6610f2;
+    color: white;
+    padding: 14px 25px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    border-radius: 1px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.apply-btn:hover {
+    background-color: #590dd4;
+  }
