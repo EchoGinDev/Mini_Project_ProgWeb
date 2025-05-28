@@ -1,5 +1,16 @@
 <?php
 include 'koneksi.php';
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
+    $result = mysqli_query($conn, "SELECT * FROM jobs WHERE id=$id");
+    if ($row = mysqli_fetch_assoc($result)) {
+        // tampilkan detail pekerjaan sesuai $row
+    } else {
+        echo "Lowongan tidak ditemukan.";
+    }
+} else {
+    echo "ID pekerjaan tidak diberikan.";
+}
 ?>
 
 <!DOCTYPE html>
@@ -19,7 +30,7 @@ include 'koneksi.php';
         <ul class="nav-links">
             <li><a href="#">About</a></li>
             <li><a href="index.php">Home</a></li>
-            <li><a href="login.php" class="contact-btn">login</a></li>
+            <li><a href="login.php" class="contact-btn">Login</a></li>
         </ul>
     </nav>
 </header>
@@ -44,7 +55,7 @@ include 'koneksi.php';
     </p>
 
     <hr style="border: 1px solid rgb(39, 39, 39);">
-
+    
     <section class="job-listings">
         <h1>Daftar Lowongan</h1>
 
@@ -58,7 +69,7 @@ include 'koneksi.php';
             echo '<p>Posisi: ' . htmlspecialchars($row['posisi']) . '</p>';
             echo '<p>Jenis: ' . htmlspecialchars($row['jenis']) . '</p>';
             echo '<p>Gaji: ' . htmlspecialchars($row['gaji']) . '</p>';
-            echo '<a class="detail-btn" href="' . htmlspecialchars($row['detail_page']) . '">Lihat Detail</a>';
+            echo '<a class="detail-btn" href="detail.php?id=' . $row['id'] . '">Lihat Detail</a>';
             echo '</div>';
         }
         ?>

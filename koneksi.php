@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db   = "loker_db"; // Ganti sesuai nama database kamu
+$db   = "loker_db"; 
 
 $conn = mysqli_connect($host, $user, $pass, $db);
 
