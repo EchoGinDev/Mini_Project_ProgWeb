@@ -44,7 +44,7 @@ if (isset($_GET['id'])) {
         <ul class="nav-links">
             <li><a href="#">About</a></li>
             <li><a href="index.php">Home</a></li>
-            <li><span style="color: white; margin-right: 10px;">Halo, <?= htmlspecialchars($email_pengguna) ?></span></li>
+            <li><span style="color: white; margin-right: 10px;"><?= htmlspecialchars($email_pengguna) ?></span></li>
             <li><a href="logout.php" class="contact-btn">Logout</a></li>
         </ul>
     </nav>
