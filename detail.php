@@ -1,12 +1,22 @@
 <?php
+session_start();
 include 'koneksi.php';
 
+// Cek apakah user sudah login
+if (!isset($_SESSION['email'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$email_pengguna = $_SESSION['email'];
+
+// Cek apakah parameter ID diberikan
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
     $result = mysqli_query($conn, "SELECT * FROM jobs WHERE id=$id");
 
     if ($row = mysqli_fetch_assoc($result)) {
-        // Data pekerjaan ditemukan, tampilkan di HTML nanti
+        // Data pekerjaan ditemukan, akan ditampilkan di bawah
     } else {
         echo "Lowongan tidak ditemukan.";
         exit;
@@ -24,7 +34,6 @@ if (isset($_GET['id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Lowongan - <?php echo htmlspecialchars($row['posisi']); ?></title>
     <link rel="stylesheet" href="styles.css">
-    
 </head>
 <body>
 <header>
@@ -35,7 +44,8 @@ if (isset($_GET['id'])) {
         <ul class="nav-links">
             <li><a href="#">About</a></li>
             <li><a href="index.php">Home</a></li>
-            <li><a href="login.php" class="contact-btn">Login</a></li>
+            <li><span style="color: white; margin-right: 10px;">Halo, <?= htmlspecialchars($email_pengguna) ?></span></li>
+            <li><a href="logout.php" class="contact-btn">Logout</a></li>
         </ul>
     </nav>
 </header>
@@ -57,7 +67,7 @@ if (isset($_GET['id'])) {
 </main>
 
 <footer>
-    <p>&copy; 2024 Job Portal. All rights reserved.</p>
+    <p>&copy; 2025 Job Portal. All rights reserved.</p>
 </footer>
 </body>
 </html>

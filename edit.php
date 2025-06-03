@@ -2,19 +2,32 @@
 session_start();
 include 'koneksi.php';
 
-// Pastikan admin
+// Pastikan hanya admin yang bisa mengakses halaman ini
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit;
 }
 
-// Ambil data
+// Pastikan parameter ID tersedia
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    header("Location: admin_menu.php");
+    exit;
+}
+
 $id = intval($_GET['id']);
+
+// Ambil data pekerjaan yang akan diedit
 $query = "SELECT * FROM jobs WHERE id = $id";
 $result = mysqli_query($conn, $query);
 $row = mysqli_fetch_assoc($result);
 
-// Update jika disubmit
+if (!$row) {
+    echo "<p>Data lowongan tidak ditemukan.</p>";
+    echo "<a href='admin_menu.php'>Kembali</a>";
+    exit;
+}
+
+// Proses update jika form disubmit
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nama_perusahaan = mysqli_real_escape_string($conn, $_POST['nama_perusahaan']);
     $kategori = mysqli_real_escape_string($conn, $_POST['kategori']);
@@ -33,32 +46,70 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         gaji_max=$gaji_max,
         logo='$logo'
         WHERE id=$id";
-    mysqli_query($conn, $updateQuery);
 
-    header("Location: admin_menu.php");
-    exit;
+    if (mysqli_query($conn, $updateQuery)) {
+        echo "<script>alert('Data lowongan berhasil diperbarui.'); window.location.href='admin_menu.php';</script>";
+        exit;
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Edit Lowongan</title>
-<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <title>Edit Lowongan</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h2>Edit Lowongan</h2>
-<form method="POST">
-    <input type="text" name="nama_perusahaan" value="<?= htmlspecialchars($row['nama_perusahaan']) ?>" required>
-    <input type="text" name="kategori" value="<?= htmlspecialchars($row['kategori']) ?>" required>
-    <input type="text" name="posisi" value="<?= htmlspecialchars($row['posisi']) ?>" required>
-    <input type="text" name="jenis" value="<?= htmlspecialchars($row['jenis']) ?>" required>
-    <input type="number" name="gaji_min" value="<?= htmlspecialchars($row['gaji_min']) ?>" required>
-    <input type="number" name="gaji_max" value="<?= htmlspecialchars($row['gaji_max']) ?>" required>
-    <input type="text" name="logo" value="<?= htmlspecialchars($row['logo']) ?>" required>
-    <button type="submit">Simpan</button>
-</form>
-<a href="admin_menu.php">Kembali</a>
+    <header>
+        <nav class="navbar">
+            <a href="admin_menu.php">
+                <img class="logo" src="images/navbarLogo.png" alt="Logo">
+            </a>
+            <ul class="nav-links">
+                <li><a href="admin_menu.php">Dashboard</a></li>
+                <li><a href="logout.php" class="contact-btn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="form-container">
+            <h2>Edit Lowongan</h2>
+            <form method="POST">
+                <label for="nama_perusahaan">Nama Perusahaan:</label>
+                <input type="text" id="nama_perusahaan" name="nama_perusahaan" value="<?= htmlspecialchars($row['nama_perusahaan']) ?>" required>
+
+                <label for="kategori">Kategori:</label>
+                <input type="text" id="kategori" name="kategori" value="<?= htmlspecialchars($row['kategori']) ?>" required>
+
+                <label for="posisi">Posisi:</label>
+                <input type="text" id="posisi" name="posisi" value="<?= htmlspecialchars($row['posisi']) ?>" required>
+
+                <label for="jenis">Jenis:</label>
+                <input type="text" id="jenis" name="jenis" value="<?= htmlspecialchars($row['jenis']) ?>" required>
+
+                <label for="gaji_min">Gaji Minimum:</label>
+                <input type="number" id="gaji_min" name="gaji_min" value="<?= htmlspecialchars($row['gaji_min']) ?>" required>
+
+                <label for="gaji_max">Gaji Maksimum:</label>
+                <input type="number" id="gaji_max" name="gaji_max" value="<?= htmlspecialchars($row['gaji_max']) ?>" required>
+
+                <label for="logo">Link Logo:</label>
+                <input type="text" id="logo" name="logo" value="<?= htmlspecialchars($row['logo']) ?>" required>
+
+                <button type="submit">Simpan</button>
+            </form>
+            <br>
+            <a href="admin_menu.php">Kembali</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Job Portal. All rights reserved.</p>
+    </footer>
 </body>
 </html>

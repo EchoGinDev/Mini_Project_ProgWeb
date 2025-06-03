@@ -1,9 +1,17 @@
 <?php
+session_start();
 include 'koneksi.php'; // Koneksi ke database
 
 // Cek apakah user sudah login
-$isLoggedIn = isset($_SESSION['email']);
-$isAdmin = $isLoggedIn && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+if (!isset($_SESSION['email'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$email_pengguna = $_SESSION['email'];
+
+// Cek role admin (jika butuh)
+$isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
 // Ambil input dari form pencarian, gunakan nilai default jika kosong
 $nama_perusahaan = $_POST['nama_perusahaan'] ?? '';
@@ -30,7 +38,6 @@ if ($jenis !== '') {
 }
 
 // Filter berdasarkan rentang gaji yang diinput user (jika valid angka)
-// Perusahaan akan ditampilkan jika target gaji berada di antara gaji_min dan gaji_max
 if ($gaji_target !== '' && is_numeric($gaji_target)) {
     $gaji_target = intval($gaji_target);
     $query .= " AND gaji_min <= $gaji_target AND gaji_max >= $gaji_target";
@@ -58,7 +65,8 @@ $result = mysqli_query($conn, $query);
         <ul class="nav-links">
             <li><a href="#">About</a></li>
             <li><a href="index.php">Home</a></li>
-            <li><a href="login.php" class="contact-btn">Login</a></li>
+            <li><span style="color: white; margin-right: 10px;">Halo, <?= htmlspecialchars($email_pengguna) ?></span></li>
+            <li><a href="logout.php" class="contact-btn">Logout</a></li>
         </ul>
     </nav>
 </header>
@@ -92,7 +100,6 @@ $result = mysqli_query($conn, $query);
         <h1>Daftar Lowongan</h1>
 
         <?php
-        // Tampilkan hasil lowongan jika ada
         if (mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
                 echo '<div class="job-item">';
@@ -106,7 +113,6 @@ $result = mysqli_query($conn, $query);
                 echo '</div>';
             }
         } else {
-            // Jika tidak ada hasil
             echo '<p>Tidak ada lowongan yang sesuai dengan pencarian Anda.</p>';
         }
         ?>
@@ -115,7 +121,7 @@ $result = mysqli_query($conn, $query);
 
 <!-- Footer -->
 <footer>
-    <p>&copy; 2024 Job Portal. All rights reserved.</p>
+    <p>&copy; 2025 Job Portal. All rights reserved.</p>
 </footer>
 </body>
 </html>

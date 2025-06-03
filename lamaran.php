@@ -1,5 +1,14 @@
 <?php
+session_start();
 include "koneksi.php";
+
+// Cek apakah user sudah login
+if (!isset($_SESSION['email'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$email_pengguna = $_SESSION['email'];
 
 // Cek apakah form disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -67,7 +76,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <ul class="nav-links">
                 <li><a href="#">About</a></li>
                 <li><a href="index.php">Home</a></li>
-                <li><a href="login.php" class="contact-btn">Login</a></li>
+                <li><span style="color: white; margin-right: 10px;">Halo, <?= htmlspecialchars($email_pengguna) ?></span></li>
+                <li><a href="logout.php" class="contact-btn">Logout</a></li>
             </ul>
         </nav>
     </header>
@@ -83,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="date" id="tanggal_lahir" name="tanggal_lahir" required>
 
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" value="<?= htmlspecialchars($email_pengguna) ?>" required readonly>
 
                 <label for="nomor_hp">Nomor HP:</label>
                 <input type="tel" id="nomor_hp" name="nomor_hp" required>
@@ -103,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </main>
 
     <footer>
-        <p>&copy; 2024 Job Portal. All rights reserved.</p>
+        <p>&copy; 2025 Job Portal. All rights reserved.</p>
     </footer>
 </body>
 </html>
