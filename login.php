@@ -12,13 +12,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (mysqli_num_rows($result) === 1) {
         $user = mysqli_fetch_assoc($result);
 
-        // Verifikasi password dengan password_hash()
+        // Verifikasi password
         if (password_verify($password, $user['password'])) {
-            // Simpan session jika login berhasil
+            // Simpan session
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['email'] = $user['email'];
+            $_SESSION['role'] = $user['role']; // Pastikan ada kolom role di tabel users
 
-            header("Location: index.php");
+            // Redirect sesuai role
+            if ($user['role'] === 'admin') {
+                header("Location: admin_menu.php");
+            } else {
+                header("Location: index.php");
+            }
             exit;
         } else {
             $error = "Password salah.";
@@ -38,50 +44,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <nav class="navbar">
-            <a href="login.php">
-                <img class="logo" src="images/navbarLogo.png" alt="Logo Perusahaan">
-            </a>
-        </nav>
-    </header>
+<header>
+    <nav class="navbar">
+        <a href="login.php">
+            <img class="logo" src="images/navbarLogo.png" alt="Logo Perusahaan">
+        </a>
+    </nav>
+</header>
 
-    <main>
-        <section class="login-container">
-            <div class="login-box">
-                <img src="images/logo_login.png" alt="Lookjob Logo" class="login-logo">
-                <h2>Sign in to your account</h2>
+<main>
+    <section class="login-container">
+        <div class="login-box">
+            <img src="images/logo_login.png" alt="Lookjob Logo" class="login-logo">
+            <h2>Sign in to your account</h2>
 
-                <?php if (!empty($error)): ?>
-                    <p style="color: red;"><?= $error ?></p>
-                <?php endif; ?>
+            <?php if (!empty($error)): ?>
+                <p style="color: red;"><?= $error ?></p>
+            <?php endif; ?>
 
-                <form method="POST" action="login.php">
-                    <div class="input-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" placeholder="Masukkan email" required>
+            <form method="POST" action="login.php">
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Masukkan email" required>
 
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" placeholder="Masukkan password" required>
-                    </div>
-                    
-                    <div class="login-options">
-                        <label class="checkbox">
-                            <input type="checkbox"> Keep me logged in
-                        </label>
-                        <a href="#" class="forgot-password">Lupa password?</a>
-                    </div>
-                    
-                    <button type="submit" class="login-btn">Log in</button>
-                </form>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+                </div>
+                
+                <div class="login-options">
+                    <label class="checkbox">
+                        <input type="checkbox"> Keep me logged in
+                    </label>
+                    <a href="#" class="forgot-password">Lupa password?</a>
+                </div>
+                
+                <button type="submit" class="login-btn">Log in</button>
+            </form>
 
-                <p>Tidak punya akun? <a href="register.php">Sign up</a></p>
-            </div>
-        </section>
-    </main>
+            <p>Tidak punya akun? <a href="register.php">Sign up</a></p>
+        </div>
+    </section>
+</main>
 
-    <footer>
-        <p>&copy; 2025 Echo1</p>
-    </footer>
+<footer>
+    <p>&copy; 2025 Echo1</p>
+</footer>
 </body>
 </html>

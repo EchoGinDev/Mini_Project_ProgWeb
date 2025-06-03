@@ -1,6 +1,10 @@
 <?php
 include 'koneksi.php'; // Koneksi ke database
 
+// Cek apakah user sudah login
+$isLoggedIn = isset($_SESSION['email']);
+$isAdmin = $isLoggedIn && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+
 // Ambil input dari form pencarian, gunakan nilai default jika kosong
 $nama_perusahaan = $_POST['nama_perusahaan'] ?? '';
 $kategori = $_POST['kategori'] ?? '';
