@@ -61,7 +61,12 @@ $result = mysqli_query($conn, $query);
         <ul class="nav-links">
             <li><a href="#">About</a></li>
             <li><a href="admin_menu.php">Home</a></li>
-            <li><a href="login.php" class="contact-btn">Logout</a></li>
+            <?php if (isset($_SESSION['email'])): ?>
+                <li><span>Halo, <?= htmlspecialchars($_SESSION['email']); ?></span></li>
+                <li><a href="logout.php" class="contact-btn">Logout</a></li>
+            <?php else: ?>
+                <li><a href="login.php" class="contact-btn">Login</a></li>
+            <?php endif; ?>
         </ul>
     </nav>
 </header>
