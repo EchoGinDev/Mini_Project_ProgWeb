@@ -241,6 +241,31 @@ footer {
     background-color: #590dd4;
   }
 
+  /* tombol delete loker */
+.delete-btn {
+    background-color: #6610f2;
+    color: white;
+    padding: 14px 25px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    border-radius: 1px;
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+.delete-btn:hover {
+    background-color: #590dd4;
+  }
+
+
+
+
+
+
+
+
+
 
 /* Tombol hyperlink lamar */
 .lamar-btn {
