@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </a>
             <ul class="nav-links">
                 <li><a href="index.php">Home</a></li>
-                <li><a href="logout.php">Logout</a></li>
+                <li><a href="login.php">Logout</a></li>
             </ul>
         </nav>
     </header>
