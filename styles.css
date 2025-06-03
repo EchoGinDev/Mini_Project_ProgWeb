@@ -208,6 +208,25 @@ footer {
     text-decoration: underline;
 }
 
+
+/* acction btn */
+.action-btn {
+    background-color: #6610f2;
+    color: white;
+    padding: 14px 25px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    border-radius: 1px;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.action-btn:hover {
+    background-color: #590dd4;
+}
+
 /* Tombol login */
 .login-btn {
     width: 100%;
@@ -224,8 +243,8 @@ footer {
     background-color: #590dd4;
 }
 
-/* Tombol hyperlink detail di halaman main */
-.detail-btn {
+/* tombol add loker */
+.add-btn {
     background-color: #6610f2;
     color: white;
     padding: 14px 25px;
@@ -235,13 +254,16 @@ footer {
     border-radius: 1px;
     text-decoration: none;
     display: inline-block;
-  }
-  
-.detail-btn:hover {
-    background-color: #590dd4;
-  }
+    margin-right: 10px;
 
-  /* tombol delete loker */
+}
+
+.add-btn:hover {
+    background-color: #590dd4;
+}
+
+/* tombol detail dan hapus */
+.detail-btn,
 .delete-btn {
     background-color: #6610f2;
     color: white;
@@ -252,20 +274,13 @@ footer {
     border-radius: 1px;
     text-decoration: none;
     display: inline-block;
-  }
-  
+    margin-right: 10px;
+}
+
+.detail-btn:hover,
 .delete-btn:hover {
     background-color: #590dd4;
-  }
-
-
-
-
-
-
-
-
-
+}
 
 /* Tombol hyperlink lamar */
 .lamar-btn {
