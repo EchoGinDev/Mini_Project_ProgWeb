@@ -22,6 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Redirect sesuai role
             if ($user['role'] === 'admin') {
                 header("Location: admin_menu.php");
+            } elseif ($user['role'] === 'company') {
+                header("Location: company_menu.php");
             } else {
                 header("Location: index.php");
             }
