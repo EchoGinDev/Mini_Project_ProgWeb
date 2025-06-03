@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 21, 2025 at 07:56 PM
+-- Generation Time: Jun 03, 2025 at 06:36 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,17 +35,47 @@ CREATE TABLE `jobs` (
   `posisi` varchar(100) DEFAULT NULL,
   `jenis` varchar(50) DEFAULT NULL,
   `gaji` varchar(50) DEFAULT NULL,
-  `detail_page` varchar(100) DEFAULT NULL
+  `detail_page` varchar(100) DEFAULT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `syarat` text DEFAULT NULL,
+  `lokasi` varchar(255) DEFAULT NULL,
+  `batas_lamaran` date DEFAULT NULL,
+  `gaji_min` int(11) DEFAULT NULL,
+  `gaji_max` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `jobs`
 --
 
-INSERT INTO `jobs` (`id`, `nama_perusahaan`, `logo`, `kategori`, `posisi`, `jenis`, `gaji`, `detail_page`) VALUES
-(1, 'PT. Pindad', 'images/logo1.png', 'IT', 'Backend Developer', 'Remote', 'Rp 12.000.000 - Rp 18.000.000', 'detail1.php'),
-(2, 'Tokopedia', 'images/logo2.png', 'E-commerce', 'Digital Marketing', 'Freelance', 'Rp 7.000.000 - Rp 10.000.000', 'detail2.php'),
-(3, 'INDOMARET', 'images/logo4.png', 'Logistik', 'Warehouse Staff', 'Full-time', 'Rp 5.000.000 - Rp 10.000.000', 'detail4.php');
+INSERT INTO `jobs` (`id`, `nama_perusahaan`, `logo`, `kategori`, `posisi`, `jenis`, `gaji`, `detail_page`, `deskripsi`, `syarat`, `lokasi`, `batas_lamaran`, `gaji_min`, `gaji_max`) VALUES
+(1, 'PT. Pindad', 'images/logo1.png', 'IT', 'Backend Developer', 'Remote', 'Rp 12.000.000 - Rp 18.000.000', 'detail1.php', 'Memiliki minat kuat dan pemahaman dasar di bidang industri pertahanan dan manufaktur. Antusias untuk berkontribusi pada kemajuan teknologi dan kemandirian bangsa melalui PT Pindad. Cepat belajar, proaktif, dan mampu bekerja sama dalam tim untuk mencapai tujuan bersama. Siap menghadapi tantangan baru dan mengembangkan diri secara profesional di lingkungan kerja yang dinamis.', NULL, NULL, NULL, 12000000, 18000000),
+(2, 'Tokopedia', 'images/logo2.png', 'E-commerce', 'Digital Marketing', 'Freelance', 'Rp 7.000.000 - Rp 10.000.000', 'detail2.php', 'Kami mencari seorang Digital Marketing Specialist Freelance yang berpengalaman untuk membantu merencanakan, mengimplementasikan, dan mengelola kampanye pemasaran digital yang efektif untuk mencapai tujuan bisnis kami. Anda akan bekerja secara independen, namun tetap berkoordinasi dengan tim internal Tokopedia untuk memastikan strategi yang selaras dan terintegrasi.', NULL, NULL, NULL, 7000000, 10000000),
+(3, 'INDOMARET', 'images/logo4.png', 'Logistik', 'Warehouse Staff', 'Full-time', 'Rp 5.000.000 - Rp 10.000.000', 'detail4.php', 'Melayani pelanggan dengan ramah, mengoperasikan mesin kasir, melakukan transaksi penjualan, menata produk di rak toko, menjaga kebersihan area toko, dan membantu pelaksanaan promosi.\r\n\r\nKualifikasi:\r\n\r\nPria/Wanita, usia maks. 23 tahun.\r\nPendidikan min. SMA/SMK sederajat.\r\nBelum menikah.\r\nTinggi badan Pria min. 165 cm, Wanita min. 155 cm (berat badan proporsional).\r\nBerpenampilan menarik, rapi, dan bersih.\r\nJujur, cekatan, teliti, dan bertanggung jawab.\r\nMampu berkomunikasi dengan baik dan bekerja sama dalam tim.\r\nBersedia bekerja dengan sistem shift dan pada hari libur.\r\nDiutamakan berdomisili di area [Nama Kota/Area, contoh: Tasikmalaya dan sekitarnya].', NULL, NULL, NULL, 5000000, 10000000);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `lamaran`
+--
+
+CREATE TABLE `lamaran` (
+  `id` int(11) NOT NULL,
+  `nama` varchar(255) DEFAULT NULL,
+  `tanggal_lahir` date DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `nomor_hp` varchar(20) DEFAULT NULL,
+  `cv` varchar(255) DEFAULT NULL,
+  `portofolio` varchar(255) DEFAULT NULL,
+  `surat_lamaran` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `lamaran`
+--
+
+INSERT INTO `lamaran` (`id`, `nama`, `tanggal_lahir`, `email`, `nomor_hp`, `cv`, `portofolio`, `surat_lamaran`) VALUES
+(1, 'Efrant Emmanuel', '2005-04-09', 'efrantemmanuel13@gmail.com', '082129167863', '#9 PHP-2.pdf', '#10 PHP-3.pdf', '#11 PHP-4.pdf');
 
 -- --------------------------------------------------------
 
@@ -56,18 +86,18 @@ INSERT INTO `jobs` (`id`, `nama_perusahaan`, `logo`, `kategori`, `posisi`, `jeni
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL
+  `password` varchar(255) NOT NULL,
+  `role` enum('admin','user') DEFAULT 'user'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `password`) VALUES
-(2, 'efrant@gmail.com', '$2y$10$K6LQ2KfIsezIitoIioSWhOqYkhCaMdO9zS/P0MrOdzlLY9xce7uU6'),
-(4, 'admin@example.com', '$2y$10$ngLsoHJHZ7.V.CDhsp177O8ZeDsW9kbLBH1IBysNKP94HQPZ.biYa'),
-(5, 'uzumaki@email.com', '$2y$10$hlvwFT.FdPsDckdXh8lTquaTTopPeokm8h6GVlpuon/b/EStYy8Ru'),
-(6, 'uzu@email.com', '$2y$10$pDaVg/6dNfmQwottVrrnc.jVB33uUFMmWntWH6qoGD8w.RcBJqwCa');
+INSERT INTO `users` (`id`, `email`, `password`, `role`) VALUES
+(2, 'efrant@gmail.com', '$2y$10$K6LQ2KfIsezIitoIioSWhOqYkhCaMdO9zS/P0MrOdzlLY9xce7uU6', 'user'),
+(5, 'efrantemmanuel1@gmail.com', '$2y$10$RNUARV36m01ANPoibzKhF.rFj/m8creJsQ9CSJIMnhsvfIJECoJSe', 'user'),
+(6, 'admin@gmail.com', '$2y$10$o30Q8QoCFzFaYhKX6nToXe2uMheCV5VV0k08JM0cVFT6E3wkqNFvG', 'admin');
 
 --
 -- Indexes for dumped tables
@@ -77,6 +107,12 @@ INSERT INTO `users` (`id`, `email`, `password`) VALUES
 -- Indexes for table `jobs`
 --
 ALTER TABLE `jobs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `lamaran`
+--
+ALTER TABLE `lamaran`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -95,6 +131,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `jobs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `lamaran`
+--
+ALTER TABLE `lamaran`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
