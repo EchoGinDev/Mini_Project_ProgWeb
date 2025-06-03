@@ -1,3 +1,55 @@
+<?php
+include "koneksi.php";
+
+// Cek apakah form disubmit
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Ambil data dari form
+    $nama = mysqli_real_escape_string($conn, $_POST['nama']);
+    $tanggal_lahir = mysqli_real_escape_string($conn, $_POST['tanggal_lahir']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $nomor_hp = mysqli_real_escape_string($conn, $_POST['nomor_hp']);
+
+    // Handle upload file CV
+    $cv_name = $_FILES['cv']['name'];
+    $cv_tmp = $_FILES['cv']['tmp_name'];
+    $cv_folder = "uploads/" . $cv_name;
+
+    // Upload file portofolio (opsional)
+    $portofolio_name = $_FILES['portofolio']['name'];
+    $portofolio_tmp = $_FILES['portofolio']['tmp_name'];
+    $portofolio_folder = "uploads/" . $portofolio_name;
+
+    // Upload surat lamaran (opsional)
+    $surat_name = $_FILES['surat_lamaran']['name'];
+    $surat_tmp = $_FILES['surat_lamaran']['tmp_name'];
+    $surat_folder = "uploads/" . $surat_name;
+
+    // Pastikan folder uploads/ ada
+    if (!is_dir("uploads")) {
+        mkdir("uploads", 0777, true);
+    }
+
+    // Pindahkan file yang diupload
+    move_uploaded_file($cv_tmp, $cv_folder);
+    if ($portofolio_name != "") {
+        move_uploaded_file($portofolio_tmp, $portofolio_folder);
+    }
+    if ($surat_name != "") {
+        move_uploaded_file($surat_tmp, $surat_folder);
+    }
+
+    // Masukkan data ke database
+    $sql = "INSERT INTO lamaran (nama, tanggal_lahir, email, nomor_hp, cv, portofolio, surat_lamaran)
+            VALUES ('$nama', '$tanggal_lahir', '$email', '$nomor_hp', '$cv_name', '$portofolio_name', '$surat_name')";
+
+    if (mysqli_query($conn, $sql)) {
+        echo "<script>alert('Lamaran berhasil dikirim!'); window.location.href='index.php';</script>";
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -23,7 +75,7 @@
     <main>
         <section class="application-form">
             <h2>Formulir Pengajuan Lamaran</h2>
-            <form>
+            <form action="" method="POST" enctype="multipart/form-data">
                 <label for="nama">Nama Lengkap:</label>
                 <input type="text" id="nama" name="nama" required>
 
@@ -53,12 +105,5 @@
     <footer>
         <p>&copy; 2024 Job Portal. All rights reserved.</p>
     </footer>
-
-    <script>
-        document.querySelector('form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            alert('Lamaran berhasil dikirim!');
-        });
-    </script>
 </body>
 </html>
