@@ -111,14 +111,25 @@ main {
     cursor: pointer;
 }
 
-footer {
+/* footer {
     background-color: #201c24;
     color: #fff;
     text-align: center;
     padding: 1px 0;
     width: 100%;
     bottom: 0;
+} */
+
+
+/* Footer tetap di bawah */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
 }
+
+
 
 /* Style khusus untuk box form login */
 .login-container {

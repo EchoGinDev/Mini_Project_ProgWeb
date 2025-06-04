@@ -53,6 +53,9 @@ $result = mysqli_query($conn, $query);
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<!-- Navbar -->
+
 <header>
     <nav class="navbar">
         <a href="admin_menu.php">
@@ -62,7 +65,7 @@ $result = mysqli_query($conn, $query);
             <li><a href="#">About</a></li>
             <li><a href="admin_menu.php">Home</a></li>
             <?php if (isset($_SESSION['email'])): ?>
-                <li><span>Halo, <?= htmlspecialchars($_SESSION['email']); ?></span></li>
+                <li><span>  <?= htmlspecialchars($_SESSION['email']); ?></span></li>
                 <li><a href="logout.php" class="contact-btn">Logout</a></li>
             <?php else: ?>
                 <li><a href="login.php" class="contact-btn">Login</a></li>
