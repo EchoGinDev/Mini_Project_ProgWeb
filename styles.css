@@ -315,16 +315,20 @@ footer {
 .navbar {
     display: flex;
     justify-content: space-between;
+    height: 58px;
     align-items: center;
     padding: 5px 10px;
     background-color: #201c24;
     box-shadow: 0 4px 6px rgb(106, 106, 106);
 }
 .logo {
-    width: 12%;
-    font-weight: bold;
-    margin-top: 10px;
-    gap: 20px;
+    float: left;
+    padding: 12px 15px;
+    font-size: 19px;
+    line-height: 21px;
+    height: 62px;
+    max-width: 220px;
+    display: table;
 }
 .nav-links {
     list-style: none;
