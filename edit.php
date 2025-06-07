@@ -2,36 +2,110 @@
 session_start();
 include 'koneksi.php';
 
-// Authorization check - only admin can access this page
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+// Pastikan hanya admin atau company yang bisa mengakses halaman ini
+if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'company'])) {
     header("Location: login.php");
     exit;
 }
 
-// Validate job ID parameter
+// Pastikan parameter ID tersedia
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    header("Location: admin_menu.php");
+    header("Location: " . ($_SESSION['role'] === 'admin' ? "admin_menu.php" : "company_menu.php"));
     exit;
 }
 
 $id = intval($_GET['id']);
 
-// Fetch job data to edit
-$query = "SELECT * FROM jobs WHERE id = $id";
+// Jika role company, ambil nama_perusahaan dari session (dari tabel users)
+$nama_perusahaan_company = '';
+if ($_SESSION['role'] === 'company') {
+    $email_company = mysqli_real_escape_string($conn, $_SESSION['email']);
+    $query_user = "SELECT nama_perusahaan FROM users WHERE email = '$email_company' LIMIT 1";
+    $result_user = mysqli_query($conn, $query_user);
+    if ($result_user && mysqli_num_rows($result_user) > 0) {
+        $user_data = mysqli_fetch_assoc($result_user);
+        $nama_perusahaan_company = $user_data['nama_perusahaan'];
+    } else {
+        echo "Perusahaan tidak ditemukan.";
+        exit;
+    }
+}
+
+// Ambil data pekerjaan yang akan diedit
+if ($_SESSION['role'] === 'admin') {
+    $query = "SELECT * FROM jobs WHERE id = $id";
+} else {
+    // Untuk company, pastikan lowongan milik perusahaan yang login
+    $nama_perusahaan_company_esc = mysqli_real_escape_string($conn, $nama_perusahaan_company);
+    $query = "SELECT * FROM jobs WHERE id = $id AND nama_perusahaan = '$nama_perusahaan_company_esc'";
+}
+
 $result = mysqli_query($conn, $query);
 $row = mysqli_fetch_assoc($result);
 
 if (!$row) {
-    echo "<p>Data lowongan tidak ditemukan.</p>";
-    echo "<a href='admin_menu.php'>Kembali</a>";
+    echo "<p>Data lowongan tidak ditemukan atau Anda tidak memiliki izin mengedit.</p>";
+    echo "<a href='" . ($_SESSION['role'] === 'admin' ? "admin_menu.php" : "company_menu.php") . "'>Kembali</a>";
     exit;
 }
 
-// Handle form submission
+// Proses update jika form disubmit
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // [Previous PHP code remains the same...]
+    $nama_perusahaan = mysqli_real_escape_string($conn, $_POST['nama_perusahaan']);
+    $kategori = mysqli_real_escape_string($conn, $_POST['kategori']);
+    $posisi = mysqli_real_escape_string($conn, $_POST['posisi']);
+    $jenis = mysqli_real_escape_string($conn, $_POST['jenis']);
+    $gaji_min = intval($_POST['gaji_min']);
+    $gaji_max = intval($_POST['gaji_max']);
+
+    // Default logo = logo lama
+    $logo = $row['logo'];
+
+    // Jika ada file baru diupload
+    if (isset($_FILES['logo']) && $_FILES['logo']['error'] == 0) {
+        $target_dir = "uploads/";
+        $file_name = basename($_FILES['logo']['name']);
+        $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        $allowed_ext = array("jpg", "jpeg", "png");
+
+        if (in_array($file_ext, $allowed_ext)) {
+            $new_file_name = uniqid('logo_', true) . '.' . $file_ext;
+            $target_file = $target_dir . $new_file_name;
+
+            if (move_uploaded_file($_FILES['logo']['tmp_name'], $target_file)) {
+                $logo = $target_file;
+            } else {
+                echo "<script>alert('Gagal mengunggah logo.');</script>";
+            }
+        } else {
+            echo "<script>alert('Format file tidak valid. Hanya jpg, jpeg, atau png yang diperbolehkan.');</script>";
+        }
+    }
+
+    // Untuk role company, paksa nama_perusahaan sesuai session, agar tidak diubah seenaknya
+    if ($_SESSION['role'] === 'company') {
+        $nama_perusahaan = $nama_perusahaan_company;
+    }
+
+    $updateQuery = "UPDATE jobs SET
+        nama_perusahaan='$nama_perusahaan',
+        kategori='$kategori',
+        posisi='$posisi',
+        jenis='$jenis',
+        gaji_min=$gaji_min,
+        gaji_max=$gaji_max,
+        logo='$logo'
+        WHERE id=$id";
+
+    if (mysqli_query($conn, $updateQuery)) {
+        echo "<script>alert('Data lowongan berhasil diperbarui.'); window.location.href='" . ($_SESSION['role'] === 'admin' ? "admin_menu.php" : "company_menu.php") . "';</script>";
+        exit;
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">

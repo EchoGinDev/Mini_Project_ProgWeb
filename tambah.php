@@ -2,15 +2,31 @@
 session_start();
 include 'koneksi.php';
 
-// Cek login admin
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+// Cek login role admin atau company
+if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'company'])) {
     header("Location: login.php");
     exit;
 }
 
 // Handle tambah lowongan
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nama_perusahaan = mysqli_real_escape_string($conn, $_POST['nama_perusahaan']);
+    // Jika role company, ambil nama_perusahaan dari tabel users
+    if ($_SESSION['role'] === 'company') {
+        $email_company = mysqli_real_escape_string($conn, $_SESSION['email']);
+        $query_user = "SELECT nama_perusahaan FROM users WHERE email = '$email_company' LIMIT 1";
+        $result_user = mysqli_query($conn, $query_user);
+        if ($result_user && mysqli_num_rows($result_user) > 0) {
+            $user_data = mysqli_fetch_assoc($result_user);
+            $nama_perusahaan = mysqli_real_escape_string($conn, $user_data['nama_perusahaan']);
+        } else {
+            echo "<script>alert('Perusahaan tidak ditemukan.'); window.location='company_menu.php';</script>";
+            exit;
+        }
+    } else {
+        // Role admin tetap input manual
+        $nama_perusahaan = mysqli_real_escape_string($conn, $_POST['nama_perusahaan']);
+    }
+
     $kategori = mysqli_real_escape_string($conn, $_POST['kategori']);
     $posisi = mysqli_real_escape_string($conn, $_POST['posisi']);
     $jenis = mysqli_real_escape_string($conn, $_POST['jenis']);
@@ -47,7 +63,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $query = "INSERT INTO jobs (nama_perusahaan, kategori, posisi, jenis, gaji_min, gaji_max, logo)
               VALUES ('$nama_perusahaan', '$kategori', '$posisi', '$jenis', $gaji_min, $gaji_max, '$logo')";
     mysqli_query($conn, $query);
-    header("Location: admin_menu.php");
+
+    if ($_SESSION['role'] === 'company') {
+        header("Location: company_menu.php");
+    } else {
+        header("Location: admin_menu.php");
+    }
     exit;
 }
 ?>
@@ -62,11 +83,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <header>
         <nav class="navbar">
-            <a href="admin_menu.php">
+            <?php if ($_SESSION['role'] === 'admin'): ?>
+                <a href="admin_menu.php">
+            <?php else: ?>
+                <a href="company_menu.php">
+            <?php endif; ?>
                 <img class="logo" src="images/navbarLogo.png" alt="Logo Perusahaan">
             </a>
             <ul class="nav-links">
-                <li><a href="admin_menu.php">Dashboard</a></li>
+                <li><a href="<?=$_SESSION['role']==='admin' ? 'admin_menu.php' : 'company_menu.php' ?>">Dashboard</a></li>
                 <li><a href="logout.php" class="contact-btn">Logout</a></li>
             </ul>
         </nav>
@@ -76,10 +101,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="form-box">
             <h2>Tambah Lowongan Baru</h2>
             <form method="POST" enctype="multipart/form-data">
+                <?php if ($_SESSION['role'] === 'admin'): ?>
                 <div class="form-group">
                     <label for="nama_perusahaan">Nama Perusahaan:</label>
                     <input type="text" id="nama_perusahaan" name="nama_perusahaan" required>
                 </div>
+                <?php endif; ?>
 
                 <div class="form-group">
                     <label for="kategori">Kategori:</label>
@@ -113,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <div class="form-actions">
                     <button type="submit" class="btn-submit">Simpan</button>
-                    <a href="admin_menu.php" class="btn-cancel">Kembali</a>
+                    <a href="<?=$_SESSION['role']==='admin' ? 'admin_menu.php' : 'company_menu.php' ?>" class="btn-cancel">Kembali</a>
                 </div>
             </form>
         </div>
