@@ -35,7 +35,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $jenis = mysqli_real_escape_string($conn, $_POST['jenis']);
     $gaji_min = intval($_POST['gaji_min']);
     $gaji_max = intval($_POST['gaji_max']);
-    $logo = mysqli_real_escape_string($conn, $_POST['logo']);
+
+    // Default logo = logo lama
+    $logo = $row['logo'];
+
+    // Jika ada file baru diupload
+    if (isset($_FILES['logo']) && $_FILES['logo']['error'] == 0) {
+        $target_dir = "uploads/";
+        $file_name = basename($_FILES['logo']['name']);
+        $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        $allowed_ext = array("jpg", "jpeg", "png");
+
+        if (in_array($file_ext, $allowed_ext)) {
+            $new_file_name = uniqid('logo_', true) . '.' . $file_ext;
+            $target_file = $target_dir . $new_file_name;
+
+            if (move_uploaded_file($_FILES['logo']['tmp_name'], $target_file)) {
+                $logo = $target_file;
+            } else {
+                echo "<script>alert('Gagal mengunggah logo.');</script>";
+            }
+        } else {
+            echo "<script>alert('Format file tidak valid. Hanya jpg, jpeg, atau png yang diperbolehkan.');</script>";
+        }
+    }
 
     $updateQuery = "UPDATE jobs SET
         nama_perusahaan='$nama_perusahaan',
@@ -79,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <main>
         <section class="form-container">
             <h2>Edit Lowongan</h2>
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 <label for="nama_perusahaan">Nama Perusahaan:</label>
                 <input type="text" id="nama_perusahaan" name="nama_perusahaan" value="<?= htmlspecialchars($row['nama_perusahaan']) ?>" required>
 
@@ -98,8 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="gaji_max">Gaji Maksimum:</label>
                 <input type="number" id="gaji_max" name="gaji_max" value="<?= htmlspecialchars($row['gaji_max']) ?>" required>
 
-                <label for="logo">Link Logo:</label>
-                <input type="text" id="logo" name="logo" value="<?= htmlspecialchars($row['logo']) ?>" required>
+                <label for="logo">Upload Logo (JPG/PNG):</label>
+                <input type="file" id="logo" name="logo" accept=".jpg,.jpeg,.png">
+
+                <?php if (!empty($row['logo'])): ?>
+                    <p>Logo saat ini: <img src="<?= htmlspecialchars($row['logo']) ?>" alt="Logo" width="100"></p>
+                <?php endif; ?>
 
                 <button type="submit">Simpan</button>
             </form>

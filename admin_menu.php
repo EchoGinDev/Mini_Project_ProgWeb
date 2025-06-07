@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 include 'koneksi.php';
 
@@ -110,7 +110,7 @@ $result = mysqli_query($conn, $query);
                 echo '<p>Gaji: Rp ' . number_format($row['gaji_min'], 0, ',', '.') . ' - Rp ' . number_format($row['gaji_max'], 0, ',', '.') . '</p>';
 
                 echo '<a class="detail-btn" href="edit.php?id=' . $row['id'] . '">Edit</a> ';
-                echo '<a class="delete-btn" href="admin_menu.php?hapus=' . $row['id'] . '" onclick="return confirm(\'Yakin ingin menghapus lowongan ini?\')">Hapus</a>';
+                echo '<a class="delete-btn" href="admin_menu.php?hapus=' . $row['id'] . '" onclick="return confirm(\'Apakah Anda yakin ingin menghapus lowongan ini?\')">Hapus</a>';
                 echo '</div>';
             }
         } else {
