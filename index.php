@@ -56,6 +56,7 @@ $result = mysqli_query($conn, $query);
     <link rel="stylesheet" href="styles.css"> <!-- CSS eksternal -->
 </head>
 <body>
+
 <!-- Bagian Header / Navbar -->
 <header>
     <nav class="navbar">
@@ -85,6 +86,8 @@ $result = mysqli_query($conn, $query);
             <button type="submit">Cari</button>
         </form>
     </section>
+
+    
 
     <!-- Deskripsi Halaman -->
     <h2>Temukan perusahaan Anda berikutnya</h2>

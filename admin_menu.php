@@ -59,7 +59,7 @@ $result = mysqli_query($conn, $query);
 <header>
     <nav class="navbar">
         <a href="admin_menu.php">
-            <img class="logo" src="images/navbarLogo.png" alt="Logo Perusahaan">
+            <img class="logo" src=" " alt="Logo Perusahaan">
         </a>
         <ul class="nav-links">
             <li><a href="#">About</a></li>

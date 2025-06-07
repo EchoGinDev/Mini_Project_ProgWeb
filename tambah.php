@@ -55,44 +55,72 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Tambah Lowongan</title>
-<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <title>Tambah Lowongan</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header>
-    <nav class="navbar">
-        <a href="admin_menu.php">
-            <img class="logo" src="images/navbarLogo.png" alt="Logo Perusahaan">
-        </a>
-        <ul class="nav-links">
-            <li><a href="#">About</a></li>
-            <li><a href="admin_menu.php">Home</a></li>
-            <li><a href="login.php" class="contact-btn">Logout</a></li>
-        </ul>
-    </nav>
-</header>
+    <header>
+        <nav class="navbar">
+            <a href="admin_menu.php">
+                <img class="logo" src="images/navbarLogo.png" alt="Logo Perusahaan">
+            </a>
+            <ul class="nav-links">
+                <li><a href="admin_menu.php">Dashboard</a></li>
+                <li><a href="logout.php" class="contact-btn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
 
-<main>
-    <section class="search-section">
-        <h2>Tambah Lowongan Baru</h2>
-        <form method="POST" enctype="multipart/form-data">
-            <input type="text" name="nama_perusahaan" placeholder="Nama Perusahaan" required>
-            <input type="text" name="kategori" placeholder="Kategori" required>
-            <input type="text" name="posisi" placeholder="Posisi" required>
-            <input type="text" name="jenis" placeholder="Jenis" required>
-            <input type="number" name="gaji_min" placeholder="Gaji Minimum" required>
-            <input type="number" name="gaji_max" placeholder="Gaji Maksimum" required>
-            <label for="logo">Upload Logo (JPG/PNG):</label>
-            <input type="file" name="logo" id="logo" accept=".jpg,.jpeg,.png">
-            <button type="submit">Simpan</button>
-        </form>
-        <a href="admin_menu.php">Kembali</a>
-    </section>
-</main>
+    <main>
+        <div class="form-box">
+            <h2>Tambah Lowongan Baru</h2>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="nama_perusahaan">Nama Perusahaan:</label>
+                    <input type="text" id="nama_perusahaan" name="nama_perusahaan" required>
+                </div>
 
-<footer>
-    <p>&copy; 2025 Job Portal. All rights reserved.</p>
-</footer>
+                <div class="form-group">
+                    <label for="kategori">Kategori:</label>
+                    <input type="text" id="kategori" name="kategori" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="posisi">Posisi:</label>
+                    <input type="text" id="posisi" name="posisi" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="jenis">Jenis:</label>
+                    <input type="text" id="jenis" name="jenis" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="gaji_min">Gaji Minimum:</label>
+                    <input type="number" id="gaji_min" name="gaji_min" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="gaji_max">Gaji Maksimum:</label>
+                    <input type="number" id="gaji_max" name="gaji_max" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="logo">Upload Logo (JPG/PNG):</label>
+                    <input type="file" id="logo" name="logo" accept=".jpg,.jpeg,.png">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Simpan</button>
+                    <a href="admin_menu.php" class="btn-cancel">Kembali</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Job Portal. All rights reserved.</p>
+    </footer>
 </body>
 </html>
