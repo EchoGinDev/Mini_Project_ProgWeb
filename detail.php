@@ -13,10 +13,10 @@ $email_pengguna = $_SESSION['email'];
 // Cek apakah parameter ID diberikan
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
-    $result = mysqli_query($conn, "SELECT * FROM jobs WHERE id=$id");
+    $result = mysqli_query($conn, "SELECT * FROM jobs WHERE id = $id");
 
     if ($row = mysqli_fetch_assoc($result)) {
-        // Data pekerjaan ditemukan, akan ditampilkan di bawah
+        // Data pekerjaan ditemukan
     } else {
         echo "Lowongan tidak ditemukan.";
         exit;
@@ -44,7 +44,7 @@ if (isset($_GET['id'])) {
         <ul class="nav-links">
             <li><a href="#">About</a></li>
             <li><a href="index.php">Home</a></li>
-            <li><span style="color: white; margin-right: 10px;"><?= htmlspecialchars($email_pengguna) ?></span></li>
+            <li><span style="color: white; margin-right: 10px;"><?php echo htmlspecialchars($email_pengguna); ?></span></li>
             <li><a href="logout.php" class="contact-btn">Logout</a></li>
         </ul>
     </nav>
@@ -55,14 +55,15 @@ if (isset($_GET['id'])) {
         <img src="<?php echo htmlspecialchars($row['logo']); ?>" alt="Logo Perusahaan" class="detail-logo">
 
         <h1><?php echo htmlspecialchars($row['posisi']); ?></h1>
-        <h3>Perusahaan: <?php echo htmlspecialchars($row['nama_perusahaan']); ?></h3>
+        <h3>Perusahaan: <?php echo htmlspecialchars($row['username']); ?></h3>
         <p><strong>Kategori:</strong> <?php echo htmlspecialchars($row['kategori']); ?></p>
         <p><strong>Jenis Pekerjaan:</strong> <?php echo htmlspecialchars($row['jenis']); ?></p>
-        <p><strong>Gaji:</strong> <?php echo htmlspecialchars($row['gaji']); ?></p>
+        <p><strong>Gaji:</strong> Rp <?= number_format($row['gaji_min'], 0, ',', '.') ?> - Rp <?= number_format($row['gaji_max'], 0, ',', '.') ?></p>
+        <p><strong>Lokasi:</strong> <?php echo htmlspecialchars($row['lokasi'] ?? 'Tidak disebutkan'); ?></p>
         <p><strong>Deskripsi Pekerjaan:</strong></p>
         <p><?php echo nl2br(htmlspecialchars($row['deskripsi'])); ?></p>
 
-        <a href="lamaran.php" class="apply-btn">Lamar Pekerjaan Ini</a>
+        <a href="lamaran.php?id=<?php echo $row['id']; ?>" class="apply-btn">Lamar Pekerjaan Ini</a>
     </section>
 </main>
 

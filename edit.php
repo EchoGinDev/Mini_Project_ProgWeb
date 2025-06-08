@@ -2,110 +2,117 @@
 session_start();
 include 'koneksi.php';
 
-// Pastikan hanya admin atau company yang bisa mengakses halaman ini
 if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'company'])) {
     header("Location: login.php");
     exit;
 }
 
-// Pastikan parameter ID tersedia
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    header("Location: " . ($_SESSION['role'] === 'admin' ? "admin_menu.php" : "company_menu.php"));
+    header("Location: " . ($_SESSION['role'] === 'admin' ? 'admin_menu.php' : 'company_menu.php'));
     exit;
 }
 
 $id = intval($_GET['id']);
+$username = '';
 
-// Jika role company, ambil nama_perusahaan dari session (dari tabel users)
-$nama_perusahaan_company = '';
+// Ambil data username jika company
 if ($_SESSION['role'] === 'company') {
-    $email_company = mysqli_real_escape_string($conn, $_SESSION['email']);
-    $query_user = "SELECT nama_perusahaan FROM users WHERE email = '$email_company' LIMIT 1";
-    $result_user = mysqli_query($conn, $query_user);
-    if ($result_user && mysqli_num_rows($result_user) > 0) {
-        $user_data = mysqli_fetch_assoc($result_user);
-        $nama_perusahaan_company = $user_data['nama_perusahaan'];
-    } else {
-        echo "Perusahaan tidak ditemukan.";
-        exit;
+    if (!isset($_SESSION['email'])) {
+        die("<script>alert('Sesi tidak valid. Silakan login kembali.'); window.location='logout.php';</script>");
     }
-}
 
-// Ambil data pekerjaan yang akan diedit
-if ($_SESSION['role'] === 'admin') {
-    $query = "SELECT * FROM jobs WHERE id = $id";
+    $email = $_SESSION['email'];
+    $stmt = $conn->prepare("SELECT username FROM users WHERE email = ? AND role = 'company' LIMIT 1");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result_user = $stmt->get_result();
+
+    if ($result_user->num_rows === 0) {
+        die("<script>alert('Data perusahaan tidak valid.'); window.location='company_menu.php';</script>");
+    }
+
+    $username_data = $result_user->fetch_assoc();
+    $username = $username_data['username'];
+
+    $stmt = $conn->prepare("SELECT * FROM jobs WHERE id = ? AND username = ?");
+    $stmt->bind_param("is", $id, $username);
 } else {
-    // Untuk company, pastikan lowongan milik perusahaan yang login
-    $nama_perusahaan_company_esc = mysqli_real_escape_string($conn, $nama_perusahaan_company);
-    $query = "SELECT * FROM jobs WHERE id = $id AND nama_perusahaan = '$nama_perusahaan_company_esc'";
+    // admin
+    $stmt = $conn->prepare("SELECT * FROM jobs WHERE id = ?");
+    $stmt->bind_param("i", $id);
 }
-
-$result = mysqli_query($conn, $query);
-$row = mysqli_fetch_assoc($result);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
 
 if (!$row) {
-    echo "<p>Data lowongan tidak ditemukan atau Anda tidak memiliki izin mengedit.</p>";
-    echo "<a href='" . ($_SESSION['role'] === 'admin' ? "admin_menu.php" : "company_menu.php") . "'>Kembali</a>";
+    echo "<script>alert('Data tidak ditemukan atau akses ditolak.'); window.location='" . ($_SESSION['role'] === 'admin' ? 'admin_menu.php' : 'company_menu.php') . "';</script>";
     exit;
 }
 
-// Proses update jika form disubmit
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nama_perusahaan = mysqli_real_escape_string($conn, $_POST['nama_perusahaan']);
-    $kategori = mysqli_real_escape_string($conn, $_POST['kategori']);
-    $posisi = mysqli_real_escape_string($conn, $_POST['posisi']);
-    $jenis = mysqli_real_escape_string($conn, $_POST['jenis']);
-    $gaji_min = intval($_POST['gaji_min']);
-    $gaji_max = intval($_POST['gaji_max']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_SESSION['role'] === 'admin') {
+        if (empty($_POST['username'])) {
+            die("<script>alert('Nama perusahaan wajib diisi.'); history.back();</script>");
+        }
+        $username = mysqli_real_escape_string($conn, $_POST['username']);
+    }
 
-    // Default logo = logo lama
-    $logo = $row['logo'];
-
-    // Jika ada file baru diupload
-    if (isset($_FILES['logo']) && $_FILES['logo']['error'] == 0) {
-        $target_dir = "uploads/";
-        $file_name = basename($_FILES['logo']['name']);
-        $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-        $allowed_ext = array("jpg", "jpeg", "png");
-
-        if (in_array($file_ext, $allowed_ext)) {
-            $new_file_name = uniqid('logo_', true) . '.' . $file_ext;
-            $target_file = $target_dir . $new_file_name;
-
-            if (move_uploaded_file($_FILES['logo']['tmp_name'], $target_file)) {
-                $logo = $target_file;
-            } else {
-                echo "<script>alert('Gagal mengunggah logo.');</script>";
-            }
-        } else {
-            echo "<script>alert('Format file tidak valid. Hanya jpg, jpeg, atau png yang diperbolehkan.');</script>";
+    $required_fields = ['lokasi', 'kategori', 'posisi', 'jenis', 'gaji_min', 'gaji_max', 'deskripsi'];
+    foreach ($required_fields as $field) {
+        if (empty($_POST[$field])) {
+            die("<script>alert('$field wajib diisi.'); history.back();</script>");
         }
     }
 
-    // Untuk role company, paksa nama_perusahaan sesuai session, agar tidak diubah seenaknya
-    if ($_SESSION['role'] === 'company') {
-        $nama_perusahaan = $nama_perusahaan_company;
+    $lokasi = mysqli_real_escape_string($conn, $_POST['lokasi']);
+    $kategori = mysqli_real_escape_string($conn, $_POST['kategori']);
+    $posisi = mysqli_real_escape_string($conn, $_POST['posisi']);
+    $jenis = mysqli_real_escape_string($conn, $_POST['jenis']);
+    $gaji_min = (int)$_POST['gaji_min'];
+    $gaji_max = (int)$_POST['gaji_max'];
+    $deskripsi = mysqli_real_escape_string($conn, $_POST['deskripsi']);
+
+    $logo = $row['logo'];
+
+    if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
+        $allowed_types = ['image/jpeg', 'image/png'];
+        $max_size = 2 * 1024 * 1024;
+
+        if (!in_array($_FILES['logo']['type'], $allowed_types)) {
+            die("<script>alert('Format file harus JPG/PNG.'); history.back();</script>");
+        }
+
+        if ($_FILES['logo']['size'] > $max_size) {
+            die("<script>alert('Ukuran file maksimal 2MB.'); history.back();</script>");
+        }
+
+        $target_dir = "uploads/logos/";
+        if (!is_dir($target_dir)) {
+            mkdir($target_dir, 0755, true);
+        }
+
+        $file_ext = pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION);
+        $new_filename = uniqid('logo_', true) . '.' . strtolower($file_ext);
+        $target_file = $target_dir . $new_filename;
+
+        if (move_uploaded_file($_FILES['logo']['tmp_name'], $target_file)) {
+            $logo = $target_file;
+        }
     }
 
-    $updateQuery = "UPDATE jobs SET
-        nama_perusahaan='$nama_perusahaan',
-        kategori='$kategori',
-        posisi='$posisi',
-        jenis='$jenis',
-        gaji_min=$gaji_min,
-        gaji_max=$gaji_max,
-        logo='$logo'
-        WHERE id=$id";
+    $update = $conn->prepare("UPDATE jobs SET username=?, lokasi=?, kategori=?, posisi=?, jenis=?, gaji_min=?, gaji_max=?, deskripsi=?, logo=? WHERE id=?");
+    $update->bind_param("sssssiissi", $username, $lokasi, $kategori, $posisi, $jenis, $gaji_min, $gaji_max, $deskripsi, $logo, $id);
 
-    if (mysqli_query($conn, $updateQuery)) {
-        echo "<script>alert('Data lowongan berhasil diperbarui.'); window.location.href='" . ($_SESSION['role'] === 'admin' ? "admin_menu.php" : "company_menu.php") . "';</script>";
+    if ($update->execute()) {
+        $redirect = ($_SESSION['role'] === 'company') ? 'company_menu.php' : 'admin_menu.php';
+        echo "<script>alert('Lowongan berhasil diperbarui.'); window.location='$redirect';</script>";
         exit;
     } else {
-        echo "Error: " . mysqli_error($conn);
+        die("<script>alert('Gagal memperbarui data: " . addslashes($conn->error) . "'); history.back();</script>");
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="id">
@@ -113,221 +120,93 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <title>Edit Lowongan</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .navbar {
-            background-color: #2c3e50;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .nav-links {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .nav-links li a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 15px;
-            margin-left: 10px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        
-        .nav-links li a:hover {
-            background-color: #34495e;
-        }
-        
-        .contact-btn {
-            background-color: #e74c3c;
-        }
-        
-        .contact-btn:hover {
-            background-color: #c0392b;
-        }
-        
-        .form-box {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            width: 80%;
-            max-width: 700px;
-            margin: 30px auto;
-            padding: 30px;
-        }
-        
-        .form-box h2 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 24px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #34495e;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        
-        .form-group input:focus {
-            border-color: #3498db;
-            outline: none;
-            box-shadow: 0 0 5px rgba(52,152,219,0.5);
-        }
-        
-        .form-actions {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-        }
-        
-        .btn-submit {
-            background-color: #2ecc71;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        
-        .btn-submit:hover {
-            background-color: #27ae60;
-        }
-        
-        .btn-cancel {
-            background-color: #95a5a6;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            text-align: center;
-            transition: background-color 0.3s;
-        }
-        
-        .btn-cancel:hover {
-            background-color: #7f8c8d;
-        }
-        
-        .current-logo {
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .current-logo img {
-            border: 1px solid #ddd;
-            padding: 5px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-        }
-        
-    </style> -->
 </head>
 <body>
-    <header>
-        <nav class="navbar">
-            <a href="admin_menu.php">
-                <img class="logo" src="images/navbarLogo.png" alt="Logo">
-            </a>
-            <ul class="nav-links">
-                <li><a href="admin_menu.php">Dashboard</a></li>
-                <li><a href="logout.php" class="contact-btn">Logout</a></li>
-            </ul>
-        </nav>
-    </header>
+<header>
+    <nav class="navbar">
+        <a href="<?= $_SESSION['role'] === 'admin' ? 'admin_menu.php' : 'company_menu.php' ?>">
+            <img class="logo" src="images/navbarLogo.png" alt="Logo">
+        </a>
+        <ul class="nav-links">
+            <li><a href="<?= $_SESSION['role'] === 'admin' ? 'admin_menu.php' : 'company_menu.php' ?>">Dashboard</a></li>
+            <li><a href="logout.php" class="contact-btn">Logout</a></li>
+        </ul>
+    </nav>
+</header>
 
-    <main>
-        <div class="form-box">
-            <h2>Edit Lowongan</h2>
-            <form method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="nama_perusahaan">Nama Perusahaan:</label>
-                    <input type="text" id="nama_perusahaan" name="nama_perusahaan" 
-                           value="<?= htmlspecialchars($row['nama_perusahaan']) ?>" required>
+<main>
+    <div class="form-box">
+        <h2>Edit Lowongan</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <?php if ($_SESSION['role'] === 'admin'): ?>
+            <div class="form-group">
+                <label for="username">Nama Perusahaan:</label>
+                <input type="text" id="username" name="username" value="<?= htmlspecialchars($row['username']) ?>" required>
+            </div>
+            <?php endif; ?>
+
+            <div class="form-group">
+                <label for="lokasi">Lokasi:</label>
+                <input type="text" id="lokasi" name="lokasi" value="<?= htmlspecialchars($row['lokasi']) ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="kategori">Kategori:</label>
+                <input type="text" id="kategori" name="kategori" value="<?= htmlspecialchars($row['kategori']) ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="posisi">Posisi:</label>
+                <input type="text" id="posisi" name="posisi" value="<?= htmlspecialchars($row['posisi']) ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="jenis">Jenis Pekerjaan:</label>
+                <select id="jenis" name="jenis" required>
+                    <option value="">-- Pilih Jenis Pekerjaan --</option>
+                    <?php
+                    $options = ['Full-time', 'Part-time', 'Remote', 'Freelance'];
+                    foreach ($options as $opt) {
+                        $selected = ($row['jenis'] === $opt) ? 'selected' : '';
+                        echo "<option value='$opt' $selected>$opt</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="gaji_min">Gaji Minimum:</label>
+                <input type="number" id="gaji_min" name="gaji_min" value="<?= htmlspecialchars($row['gaji_min']) ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="gaji_max">Gaji Maksimum:</label>
+                <input type="number" id="gaji_max" name="gaji_max" value="<?= htmlspecialchars($row['gaji_max']) ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="deskripsi">Deskripsi Pekerjaan:</label>
+                <textarea id="deskripsi" name="deskripsi" required><?= htmlspecialchars($row['deskripsi']) ?></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="logo">Upload Logo (JPG/PNG):</label>
+                <input type="file" id="logo" name="logo" accept=".jpg,.jpeg,.png">
+            </div>
+
+            <?php if (!empty($row['logo'])): ?>
+                <div class="current-logo">
+                    <p>Logo saat ini:</p>
+                    <img src="<?= htmlspecialchars($row['logo']) ?>" alt="Logo" width="100">
                 </div>
+            <?php endif; ?>
 
-                <div class="form-group">
-                    <label for="kategori">Kategori:</label>
-                    <input type="text" id="kategori" name="kategori" 
-                           value="<?= htmlspecialchars($row['kategori']) ?>" required>
-                </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Simpan</button>
+                <a href="<?= $_SESSION['role'] === 'admin' ? 'admin_menu.php' : 'company_menu.php' ?>" class="btn-cancel">Kembali</a>
+            </div>
+        </form>
+    </div>
+</main>
 
-                <div class="form-group">
-                    <label for="posisi">Posisi:</label>
-                    <input type="text" id="posisi" name="posisi" 
-                           value="<?= htmlspecialchars($row['posisi']) ?>" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="jenis">Jenis:</label>
-                    <input type="text" id="jenis" name="jenis" 
-                           value="<?= htmlspecialchars($row['jenis']) ?>" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="gaji_min">Gaji Minimum:</label>
-                    <input type="number" id="gaji_min" name="gaji_min" 
-                           value="<?= htmlspecialchars($row['gaji_min']) ?>" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="gaji_max">Gaji Maksimum:</label>
-                    <input type="number" id="gaji_max" name="gaji_max" 
-                           value="<?= htmlspecialchars($row['gaji_max']) ?>" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="logo">Upload Logo (JPG/PNG):</label>
-                    <input type="file" id="logo" name="logo" accept=".jpg,.jpeg,.png">
-                </div>
-
-                <?php if (!empty($row['logo'])): ?>
-                    <div class="current-logo">
-                        <p>Logo saat ini:</p>
-                        <img src="<?= htmlspecialchars($row['logo']) ?>" alt="Logo" width="100">
-                    </div>
-                <?php endif; ?>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-submit">Simpan</button>
-                    <a href="admin_menu.php" class="btn-cancel">Kembali</a>
-                </div>
-            </form>
-        </div>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 Job Portal. All rights reserved.</p>
-    </footer>
-</body>
-</html>
+<footer>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 07, 2025 at 06:49 PM
+-- Generation Time: Jun 07, 2025 at 08:21 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `jobs` (
   `id` int(11) NOT NULL,
-  `nama_perusahaan` varchar(100) DEFAULT NULL,
+  `username` varchar(100) DEFAULT NULL,
   `logo` varchar(255) DEFAULT NULL,
   `kategori` varchar(50) DEFAULT NULL,
   `posisi` varchar(100) DEFAULT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE `jobs` (
 -- Dumping data for table `jobs`
 --
 
-INSERT INTO `jobs` (`id`, `nama_perusahaan`, `logo`, `kategori`, `posisi`, `jenis`, `gaji`, `detail_page`, `deskripsi`, `syarat`, `lokasi`, `batas_lamaran`, `gaji_min`, `gaji_max`) VALUES
+INSERT INTO `jobs` (`id`, `username`, `logo`, `kategori`, `posisi`, `jenis`, `gaji`, `detail_page`, `deskripsi`, `syarat`, `lokasi`, `batas_lamaran`, `gaji_min`, `gaji_max`) VALUES
 (1, 'PT. Pindad', 'images/logo1.png', 'IT', 'Backend Developer', 'Remote', 'Rp 12.000.000 - Rp 18.000.000', 'detail1.php', 'Memiliki minat kuat dan pemahaman dasar di bidang industri pertahanan dan manufaktur. Antusias untuk berkontribusi pada kemajuan teknologi dan kemandirian bangsa melalui PT Pindad. Cepat belajar, proaktif, dan mampu bekerja sama dalam tim untuk mencapai tujuan bersama. Siap menghadapi tantangan baru dan mengembangkan diri secara profesional di lingkungan kerja yang dinamis.', NULL, NULL, NULL, 12000000, 19000000),
 (2, 'Tokopedia', 'images/logo2.png', 'E-commerce', 'Digital Marketing', 'Freelance', 'Rp 7.000.000 - Rp 10.000.000', 'detail2.php', 'Kami mencari seorang Digital Marketing Specialist Freelance yang berpengalaman untuk membantu merencanakan, mengimplementasikan, dan mengelola kampanye pemasaran digital yang efektif untuk mencapai tujuan bisnis kami. Anda akan bekerja secara independen, namun tetap berkoordinasi dengan tim internal Tokopedia untuk memastikan strategi yang selaras dan terintegrasi.', NULL, NULL, NULL, 7000000, 10000000),
 (3, 'INDOMARET', 'images/logo4.png', 'Logistik', 'Warehouse Staff', 'Full-time', 'Rp 5.000.000 - Rp 10.000.000', 'detail4.php', 'Melayani pelanggan dengan ramah, mengoperasikan mesin kasir, melakukan transaksi penjualan, menata produk di rak toko, menjaga kebersihan area toko, dan membantu pelaksanaan promosi.\r\n\r\nKualifikasi:\r\n\r\nPria/Wanita, usia maks. 23 tahun.\r\nPendidikan min. SMA/SMK sederajat.\r\nBelum menikah.\r\nTinggi badan Pria min. 165 cm, Wanita min. 155 cm (berat badan proporsional).\r\nBerpenampilan menarik, rapi, dan bersih.\r\nJujur, cekatan, teliti, dan bertanggung jawab.\r\nMampu berkomunikasi dengan baik dan bekerja sama dalam tim.\r\nBersedia bekerja dengan sistem shift dan pada hari libur.\r\nDiutamakan berdomisili di area [Nama Kota/Area, contoh: Tasikmalaya dan sekitarnya].', NULL, NULL, NULL, 5000000, 10000000),
@@ -89,19 +89,20 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('admin','user','company') NOT NULL,
-  `nama_perusahaan` varchar(255) DEFAULT NULL
+  `username` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `password`, `role`, `nama_perusahaan`) VALUES
+INSERT INTO `users` (`id`, `email`, `password`, `role`, `username`) VALUES
 (2, 'efrant@gmail.com', '$2y$10$K6LQ2KfIsezIitoIioSWhOqYkhCaMdO9zS/P0MrOdzlLY9xce7uU6', 'user', NULL),
 (6, 'admin@gmail.com', '$2y$10$o30Q8QoCFzFaYhKX6nToXe2uMheCV5VV0k08JM0cVFT6E3wkqNFvG', 'admin', NULL),
 (7, 'andriano@gmail.com', '$2y$10$e0oporg8e4vOhWbP26wLYeCejWB107xbmwAGX/zmGkqRaxbQpTXoe', 'user', NULL),
 (8, 'pindad@company.com', '$2y$10$GlSxgR9mbD0LhW2BV6yjT.n8XhdjEH6QhL1u7i1KUEC7c4rvk54Oi', 'company', 'PT. Pindad'),
-(9, 'tokopedia@company.com', '$2y$10$8jIcfNetwPCvVxqy0U28juXbSD81LSAY2.yba9r0MYU.nPmPjXnjq', 'company', 'Tokopedia');
+(9, 'tokopedia@company.com', '$2y$10$8jIcfNetwPCvVxqy0U28juXbSD81LSAY2.yba9r0MYU.nPmPjXnjq', 'company', 'Tokopedia'),
+(10, 'indodax@company.com', '$2y$10$ah8z8lpG82rRIsvUZHqqSehofPiUo1.eiHRlb7H7bwMw88hispAKm', 'company', 'Indodax');
 
 --
 -- Indexes for dumped tables
@@ -146,7 +147,7 @@ ALTER TABLE `lamaran`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

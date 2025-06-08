@@ -17,15 +17,15 @@ if (isset($_GET['hapus'])) {
 }
 
 // Fitur search (tetap sama)
-$nama_perusahaan = $_POST['nama_perusahaan'] ?? '';
+$username = $_POST['username'] ?? '';
 $kategori = $_POST['kategori'] ?? '';
 $posisi = $_POST['posisi'] ?? '';
 $jenis = $_POST['jenis'] ?? '';
 $gaji_target = $_POST['gaji_target'] ?? '';
 
 $query = "SELECT * FROM jobs WHERE 1=1";
-if ($nama_perusahaan !== '') {
-    $query .= " AND nama_perusahaan LIKE '%" . mysqli_real_escape_string($conn, $nama_perusahaan) . "%'";
+if ($username !== '') {
+    $query .= " AND username LIKE '%" . mysqli_real_escape_string($conn, $username) . "%'";
 }
 if ($kategori !== '') {
     $query .= " AND kategori LIKE '%" . mysqli_real_escape_string($conn, $kategori) . "%'";
@@ -87,7 +87,7 @@ $result = mysqli_query($conn, $query);
     <section class="search-section">
         <h2>Cari Lowongan</h2>
         <form method="POST" action="admin_menu.php">
-            <input type="text" name="nama_perusahaan" placeholder="Nama Perusahaan" value="<?= htmlspecialchars($nama_perusahaan) ?>">
+            <input type="text" name="username" placeholder="Nama Perusahaan" value="<?= htmlspecialchars($username) ?>">
             <input type="text" name="kategori" placeholder="Kategori" value="<?= htmlspecialchars($kategori) ?>">
             <input type="text" name="posisi" placeholder="Posisi" value="<?= htmlspecialchars($posisi) ?>">
             <input type="text" name="jenis" placeholder="Jenis" value="<?= htmlspecialchars($jenis) ?>">
@@ -103,7 +103,7 @@ $result = mysqli_query($conn, $query);
             while ($row = mysqli_fetch_assoc($result)) {
                 echo '<div class="job-item">';
                 echo '<img src="' . htmlspecialchars($row['logo']) . '" alt="Logo Perusahaan">';
-                echo '<h3>Nama Perusahaan: ' . htmlspecialchars($row['nama_perusahaan']) . '</h3>';
+                echo '<h3>Nama Perusahaan: ' . htmlspecialchars($row['username']) . '</h3>';
                 echo '<p>Kategori: ' . htmlspecialchars($row['kategori']) . '</p>';
                 echo '<p>Posisi: ' . htmlspecialchars($row['posisi']) . '</p>';
                 echo '<p>Jenis: ' . htmlspecialchars($row['jenis']) . '</p>';
