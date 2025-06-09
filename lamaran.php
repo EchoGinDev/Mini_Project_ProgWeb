@@ -18,46 +18,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $nomor_hp = mysqli_real_escape_string($conn, $_POST['nomor_hp']);
 
+    // Maksimum ukuran file (5 MB)
+    $max_size = 5 * 1024 * 1024;
+
     // Handle upload file CV
     $cv_name = $_FILES['cv']['name'];
     $cv_tmp = $_FILES['cv']['tmp_name'];
+    $cv_size = $_FILES['cv']['size'];
     $cv_folder = "uploads/" . $cv_name;
 
     // Upload file portofolio (opsional)
     $portofolio_name = $_FILES['portofolio']['name'];
     $portofolio_tmp = $_FILES['portofolio']['tmp_name'];
+    $portofolio_size = $_FILES['portofolio']['size'];
     $portofolio_folder = "uploads/" . $portofolio_name;
 
     // Upload surat lamaran (opsional)
     $surat_name = $_FILES['surat_lamaran']['name'];
     $surat_tmp = $_FILES['surat_lamaran']['tmp_name'];
+    $surat_size = $_FILES['surat_lamaran']['size'];
     $surat_folder = "uploads/" . $surat_name;
 
-    // Pastikan folder uploads/ ada
-    if (!is_dir("uploads")) {
-        mkdir("uploads", 0777, true);
-    }
-
-    // Pindahkan file yang diupload
-    move_uploaded_file($cv_tmp, $cv_folder);
-    if ($portofolio_name != "") {
-        move_uploaded_file($portofolio_tmp, $portofolio_folder);
-    }
-    if ($surat_name != "") {
-        move_uploaded_file($surat_tmp, $surat_folder);
-    }
-
-    // Masukkan data ke database
-    $sql = "INSERT INTO lamaran (nama, tanggal_lahir, email, nomor_hp, cv, portofolio, surat_lamaran)
-            VALUES ('$nama', '$tanggal_lahir', '$email', '$nomor_hp', '$cv_name', '$portofolio_name', '$surat_name')";
-
-    if (mysqli_query($conn, $sql)) {
-        echo "<script>alert('Lamaran berhasil dikirim!'); window.location.href='index.php';</script>";
+    // Validasi ukuran file
+    if ($cv_size > $max_size) {
+        $error = "Ukuran file CV tidak boleh lebih dari 5 MB.";
+    } elseif (!empty($portofolio_name) && $portofolio_size > $max_size) {
+        $error = "Ukuran file Portofolio tidak boleh lebih dari 5 MB.";
+    } elseif (!empty($surat_name) && $surat_size > $max_size) {
+        $error = "Ukuran file Surat Lamaran tidak boleh lebih dari 5 MB.";
     } else {
-        echo "Error: " . mysqli_error($conn);
+        // Pastikan folder uploads/ ada
+        if (!is_dir("uploads")) {
+            mkdir("uploads", 0777, true);
+        }
+
+        // Pindahkan file yang diupload
+        move_uploaded_file($cv_tmp, $cv_folder);
+        if (!empty($portofolio_name)) {
+            move_uploaded_file($portofolio_tmp, $portofolio_folder);
+        }
+        if (!empty($surat_name)) {
+            move_uploaded_file($surat_tmp, $surat_folder);
+        }
+
+        // Masukkan data ke database
+        $sql = "INSERT INTO lamaran (nama, tanggal_lahir, email, nomor_hp, cv, portofolio, surat_lamaran)
+                VALUES ('$nama', '$tanggal_lahir', '$email', '$nomor_hp', '$cv_name', '$portofolio_name', '$surat_name')";
+
+        if (mysqli_query($conn, $sql)) {
+            echo "<script>alert('Lamaran berhasil dikirim!'); window.location.href='index.php';</script>";
+        } else {
+            echo "Error: " . mysqli_error($conn);
+        }
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">
