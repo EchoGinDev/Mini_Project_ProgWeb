@@ -8,6 +8,22 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
+// Ambil email admin dari session
+$email_admin = $_SESSION['email'];
+
+// Ambil username admin dari tabel users
+$email_admin = mysqli_real_escape_string($conn, $email_admin);
+$query_user = "SELECT username FROM users WHERE email = '$email_admin' LIMIT 1";
+$result_user = mysqli_query($conn, $query_user);
+
+if (!$result_user || mysqli_num_rows($result_user) == 0) {
+    echo "Admin tidak ditemukan.";
+    exit;
+}
+
+$user_data = mysqli_fetch_assoc($result_user);
+$username_admin = $user_data['username'];
+
 // Handle hapus lowongan
 if (isset($_GET['hapus'])) {
     $id = intval($_GET['hapus']);
@@ -54,18 +70,16 @@ $result = mysqli_query($conn, $query);
 </head>
 <body>
 
-<!-- Navbar -->
-
 <header>
     <nav class="navbar">
         <a href="admin_menu.php">
-            <img class="logo" src=" " alt="Logo Perusahaan">
+            <img class="logo" src="images/navbarLogo.png" alt="Logo Perusahaan">
         </a>
         <ul class="nav-links">
             <li><a href="#">About</a></li>
             <li><a href="admin_menu.php">Home</a></li>
             <?php if (isset($_SESSION['email'])): ?>
-                <li><span>  <?= htmlspecialchars($_SESSION['email']); ?></span></li>
+                <li><span> <?= htmlspecialchars($username_admin); ?></span></li>
                 <li><a href="logout.php" class="contact-btn">Logout</a></li>
             <?php else: ?>
                 <li><a href="login.php" class="contact-btn">Login</a></li>
@@ -75,7 +89,6 @@ $result = mysqli_query($conn, $query);
 </header>
 
 <main>
-    <!-- Tombol Tambah Lowongan -->
     <section class="search-section">
         <h2>Kelola Lowongan</h2>
         <a href="tambah.php" class="add-btn">Tambah Lowongan Baru</a>
@@ -84,7 +97,6 @@ $result = mysqli_query($conn, $query);
 
     <hr style="border: 1px solid rgb(39, 39, 39);">
 
-    <!-- Form Pencarian -->
     <section class="search-section">
         <h2>Cari Lowongan</h2>
         <form method="POST" action="admin_menu.php">
@@ -109,7 +121,6 @@ $result = mysqli_query($conn, $query);
                 echo '<p>Posisi: ' . htmlspecialchars($row['posisi']) . '</p>';
                 echo '<p>Jenis: ' . htmlspecialchars($row['jenis']) . '</p>';
                 echo '<p>Gaji: Rp ' . number_format($row['gaji_min'], 0, ',', '.') . ' - Rp ' . number_format($row['gaji_max'], 0, ',', '.') . '</p>';
-
                 echo '<a class="detail-btn" href="edit.php?id=' . $row['id'] . '">Edit</a> ';
                 echo '<a class="delete-btn" href="admin_menu.php?hapus=' . $row['id'] . '" onclick="return confirm(\'Apakah Anda yakin ingin menghapus lowongan ini?\')">Hapus</a>';
                 echo '</div>';
