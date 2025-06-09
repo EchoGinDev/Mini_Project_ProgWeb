@@ -16,7 +16,9 @@ if (isset($_GET['id'])) {
     $result = mysqli_query($conn, "SELECT * FROM jobs WHERE id = $id");
 
     if ($row = mysqli_fetch_assoc($result)) {
-        // Data pekerjaan ditemukan
+        // Cek apakah user sudah pernah melamar lowongan ini
+        $check_lamaran = mysqli_query($conn, "SELECT * FROM lamaran WHERE email = '$email_pengguna' AND id_lowongan = '$id'");
+        $sudah_melamar = mysqli_num_rows($check_lamaran) > 0;
     } else {
         echo "Lowongan tidak ditemukan.";
         exit;
@@ -63,7 +65,11 @@ if (isset($_GET['id'])) {
         <p><strong>Deskripsi Pekerjaan:</strong></p>
         <p><?php echo nl2br(htmlspecialchars($row['deskripsi'])); ?></p>
 
-        <a href="lamaran.php?id=<?php echo $row['id']; ?>" class="apply-btn">Lamar Pekerjaan Ini</a>
+        <?php if ($sudah_melamar): ?>
+            <p style="color: red; font-weight: bold;">Anda sudah pernah melamar lowongan ini!</p>
+        <?php else: ?>
+            <a href="lamaran.php?id=<?php echo $row['id']; ?>" class="apply-btn">Lamar Pekerjaan Ini</a>
+        <?php endif; ?>
     </section>
 </main>
 

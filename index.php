@@ -10,6 +10,14 @@ if (!isset($_SESSION['email'])) {
 
 $email_pengguna = $_SESSION['email'];
 
+// Query untuk mengambil username
+$query_user = "SELECT username FROM users WHERE email = '" . mysqli_real_escape_string($conn, $email_pengguna) . "'";
+$result_user = mysqli_query($conn, $query_user);
+$row_user = mysqli_fetch_assoc($result_user);
+
+// Jika username kosong atau NULL, fallback ke email
+$username_pengguna = $row_user && !empty($row_user['username']) ? $row_user['username'] : $email_pengguna;
+
 // Cek role admin (jika butuh)
 $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
@@ -66,7 +74,7 @@ $result = mysqli_query($conn, $query);
         <ul class="nav-links">
             <li><a href="#">About</a></li>
             <li><a href="index.php">Home</a></li>
-            <li><span style="color: white; margin-right: 10px;"><?= htmlspecialchars($email_pengguna) ?></span></li>
+            <li><span style="color: white; margin-right: 10px;"><?= htmlspecialchars($username_pengguna) ?></span></li>
             <li><a href="logout.php" class="contact-btn">Logout</a></li>
         </ul>
     </nav>
