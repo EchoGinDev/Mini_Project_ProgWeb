@@ -3,15 +3,18 @@ session_start();
 include 'koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
 
-    // Validasi sederhana
-    if (empty($email) || empty($password)) {
-        $error = "Email dan password tidak boleh kosong.";
+    // Validasi input
+    if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
+        $error = "Semua kolom harus diisi.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Format email tidak valid.";
     } elseif ($password !== $confirm_password) {
-        $error = "Password dan konfirmasi tidak sama.";
+        $error = "Password dan konfirmasi tidak cocok.";
     } else {
         // Cek apakah email sudah terdaftar
         $check = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email'");
@@ -22,7 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
             // Simpan ke database dengan role 'user'
-            $query = "INSERT INTO users (email, password, role) VALUES ('$email', '$hashed_password', 'user')";
+            $query = "INSERT INTO users (email, password, role, username) 
+                      VALUES ('$email', '$hashed_password', 'user', '$username')";
             if (mysqli_query($conn, $query)) {
                 $_SESSION['success'] = "Registrasi berhasil. Silakan login.";
                 header("Location: login.php");
@@ -53,6 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <form method="POST" action="register.php">
                     <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required placeholder="Masukkan username">
+
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" required placeholder="Masukkan email">
 
