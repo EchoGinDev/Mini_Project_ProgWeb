@@ -3,13 +3,16 @@ session_start();
 include 'koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
 
-    // Validasi sederhana
-    if (empty($email) || empty($password)) {
-        $error = "Email dan password tidak boleh kosong.";
+    // Validasi input
+    if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
+        $error = "Semua kolom harus diisi.";
+    } elseif (!preg_match('/@company\.com$/i', $email)) {
+        $error = "Format email harus berupa @company.com.";
     } elseif ($password !== $confirm_password) {
         $error = "Password dan konfirmasi tidak sama.";
     } else {
@@ -22,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
             // Simpan ke database dengan role 'company'
-            $query = "INSERT INTO users (email, password, role) VALUES ('$email', '$hashed_password', 'company')";
+            $query = "INSERT INTO users (email, password, role, username) VALUES ('$email', '$hashed_password', 'company', '$username')";
             if (mysqli_query($conn, $query)) {
                 $_SESSION['success'] = "Registrasi perusahaan berhasil. Silakan login.";
                 header("Location: login.php");
@@ -34,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -53,8 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <form method="POST" action="registcompany.php">
                     <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required placeholder="Masukkan username">
+
                         <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required placeholder="Masukkan email">
+                        <input type="email" id="email" name="email" required placeholder="Masukkan email (harus @company.com)">
 
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" required placeholder="Masukkan password">
