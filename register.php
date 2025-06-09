@@ -7,11 +7,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
 
-    // Validasi sederhana
-    if (empty($email) || empty($password)) {
-        $error = "Email dan password tidak boleh kosong.";
+    // Validasi input
+    if (empty($email) || empty($password) || empty($confirm_password)) {
+        $error = "Semua kolom harus diisi.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Format email tidak valid.";
     } elseif ($password !== $confirm_password) {
-        $error = "Password dan konfirmasi tidak sama.";
+        $error = "Password dan konfirmasi tidak cocok.";
     } else {
         // Cek apakah email sudah terdaftar
         $check = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email'");
@@ -20,20 +22,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             // Hash password
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            $role = 'user'; // Default role
+            $username = NULL; // Tidak diinput saat registrasi
 
             // Simpan ke database
-            $query = "INSERT INTO users (email, password) VALUES ('$email', '$hashed_password')";
+            $query = "INSERT INTO users (email, password, role, username) 
+                      VALUES ('$email', '$hashed_password', '$role', NULL)";
+
             if (mysqli_query($conn, $query)) {
                 $_SESSION['success'] = "Registrasi berhasil. Silakan login.";
                 header("Location: login.php");
                 exit;
             } else {
-                $error = "Gagal mendaftar. Silakan coba lagi.";
+                $error = "Terjadi kesalahan saat menyimpan data.";
             }
         }
     }
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
