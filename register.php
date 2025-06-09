@@ -21,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Hash password
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            // Simpan ke database
-            $query = "INSERT INTO users (email, password) VALUES ('$email', '$hashed_password')";
+            // Simpan ke database dengan role 'user'
+            $query = "INSERT INTO users (email, password, role) VALUES ('$email', '$hashed_password', 'user')";
             if (mysqli_query($conn, $query)) {
                 $_SESSION['success'] = "Registrasi berhasil. Silakan login.";
                 header("Location: login.php");
