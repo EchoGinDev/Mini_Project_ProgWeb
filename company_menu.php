@@ -26,8 +26,8 @@ $nama_perusahaan_company = $user_data['username'];
 // Handle hapus lowongan
 if (isset($_GET['hapus'])) {
     $id = intval($_GET['hapus']);
-    // Pastikan lowongan ini milik perusahaan ini
-    $check_query = "SELECT * FROM jobs WHERE id = $id AND username = '$nama_perusahaan_company'";
+    // Pastikan lowongan ini milik perusahaan ini (buat ngefilter)
+    $check_query = "SELECT * FROM jobs WHERE id = $id AND username = '$nama_perusahaan_company'"; //patokan dri username
     $check_result = mysqli_query($conn, $check_query);
     if ($check_result && mysqli_num_rows($check_result) > 0) {
         mysqli_query($conn, "DELETE FROM jobs WHERE id = $id");
