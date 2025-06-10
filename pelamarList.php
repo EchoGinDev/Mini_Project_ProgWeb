@@ -5,7 +5,7 @@ include 'koneksi.php';
 // Query to get all applicants with their applied company names
 $query = "SELECT l.*, j.username AS company_name 
           FROM lamaran l
-          JOIN jobs j ON l.id = j.id";
+          JOIN jobs j ON l.id_lowongan = j.id";
 
 $result = mysqli_query($conn, $query);
 
