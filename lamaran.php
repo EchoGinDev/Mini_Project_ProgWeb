@@ -34,7 +34,6 @@ if (mysqli_num_rows($cek_duplikat) > 0) {
     exit;
 }
 
-
 // Jika form disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nama = mysqli_real_escape_string($conn, $_POST['nama']);
@@ -42,48 +41,87 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $nomor_hp = mysqli_real_escape_string($conn, $_POST['nomor_hp']);
 
-    $max_size = 5 * 1024 * 1024;
+    $max_size = 5 * 1024 * 1024; // 5MB
+    $upload_dir = "uploads/";
+    
+    // Buat folder uploads jika belum ada
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
 
-    $cv_name = $_FILES['cv']['name'];
-    $cv_tmp = $_FILES['cv']['tmp_name'];
-    $cv_size = $_FILES['cv']['size'];
-    $cv_folder = "uploads/" . $cv_name;
-
-    $portofolio_name = $_FILES['portofolio']['name'];
-    $portofolio_tmp = $_FILES['portofolio']['tmp_name'];
-    $portofolio_size = $_FILES['portofolio']['size'];
-    $portofolio_folder = "uploads/" . $portofolio_name;
-
-    $surat_name = $_FILES['surat_lamaran']['name'];
-    $surat_tmp = $_FILES['surat_lamaran']['tmp_name'];
-    $surat_size = $_FILES['surat_lamaran']['size'];
-    $surat_folder = "uploads/" . $surat_name;
-
-    if ($cv_size > $max_size) {
-        $error = "Ukuran file CV tidak boleh lebih dari 5 MB.";
-    } elseif (!empty($portofolio_name) && $portofolio_size > $max_size) {
-        $error = "Ukuran file Portofolio tidak boleh lebih dari 5 MB.";
-    } elseif (!empty($surat_name) && $surat_size > $max_size) {
-        $error = "Ukuran file Surat Lamaran tidak boleh lebih dari 5 MB.";
-    } else {
-        if (!is_dir("uploads")) {
-            mkdir("uploads", 0777, true);
+    // Proses upload CV
+    $cv = '';
+    if (isset($_FILES['cv']) && $_FILES['cv']['error'] == UPLOAD_ERR_OK) {
+        $cv_name = basename($_FILES['cv']['name']);
+        $cv_tmp = $_FILES['cv']['tmp_name'];
+        $cv_size = $_FILES['cv']['size'];
+        
+        if ($cv_size > $max_size) {
+            $error = "Ukuran file CV tidak boleh lebih dari 5 MB.";
+        } else {
+            $cv = $upload_dir . uniqid() . '_' . $cv_name;
+            if (!move_uploaded_file($cv_tmp, $cv)) {
+                $error = "Gagal mengupload CV.";
+            }
         }
+    } else {
+        $error = "CV wajib diupload.";
+    }
 
-        move_uploaded_file($cv_tmp, $cv_folder);
-        if (!empty($portofolio_name)) move_uploaded_file($portofolio_tmp, $portofolio_folder);
-        if (!empty($surat_name)) move_uploaded_file($surat_tmp, $surat_folder);
+    // Proses upload Portofolio (opsional)
+    $portofolio = '';
+    if (isset($_FILES['portofolio']) && $_FILES['portofolio']['error'] == UPLOAD_ERR_OK) {
+        $portofolio_name = basename($_FILES['portofolio']['name']);
+        $portofolio_tmp = $_FILES['portofolio']['tmp_name'];
+        $portofolio_size = $_FILES['portofolio']['size'];
+        
+        if ($portofolio_size > $max_size) {
+            $error = "Ukuran file Portofolio tidak boleh lebih dari 5 MB.";
+        } else {
+            $portofolio = $upload_dir . uniqid() . '_' . $portofolio_name;
+            if (!move_uploaded_file($portofolio_tmp, $portofolio)) {
+                $error = "Gagal mengupload Portofolio.";
+            }
+        }
+    }
 
+    // Proses upload Surat Lamaran (opsional)
+    $surat_lamaran = '';
+    if (isset($_FILES['surat_lamaran']) && $_FILES['surat_lamaran']['error'] == UPLOAD_ERR_OK) {
+        $surat_name = basename($_FILES['surat_lamaran']['name']);
+        $surat_tmp = $_FILES['surat_lamaran']['tmp_name'];
+        $surat_size = $_FILES['surat_lamaran']['size'];
+        
+        if ($surat_size > $max_size) {
+            $error = "Ukuran file Surat Lamaran tidak boleh lebih dari 5 MB.";
+        } else {
+            $surat_lamaran = $upload_dir . uniqid() . '_' . $surat_name;
+            if (!move_uploaded_file($surat_tmp, $surat_lamaran)) {
+                $error = "Gagal mengupload Surat Lamaran.";
+            }
+        }
+    }
+
+    // Jika tidak ada error, simpan ke database
+    if (!isset($error)) {
         $sql = "INSERT INTO lamaran 
                 (nama, tanggal_lahir, email, nomor_hp, cv, portofolio, surat_lamaran, id_user, id_lowongan)
                 VALUES 
-                ('$nama', '$tanggal_lahir', '$email', '$nomor_hp', '$cv_name', '$portofolio_name', '$surat_name', '$id_user', '$id_lowongan')";
+                ('$nama', '$tanggal_lahir', '$email', '$nomor_hp', '$cv', " . 
+                (!empty($portofolio) ? "'$portofolio'" : "NULL") . ", " .
+                (!empty($surat_lamaran) ? "'$surat_lamaran'" : "NULL") . ", 
+                '$id_user', '$id_lowongan')";
 
         if (mysqli_query($conn, $sql)) {
             echo "<script>alert('Lamaran berhasil dikirim!'); window.location.href='index.php';</script>";
         } else {
-            echo "Error: " . mysqli_error($conn);
+            $error = "Error: " . mysqli_error($conn);
         }
+    }
+    
+    // Jika ada error, tampilkan
+    if (isset($error)) {
+        echo "<script>alert('$error');</script>";
     }
 }
 ?>
@@ -136,17 +174,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <div class="form-group">
-                    <label for="cv">Upload CV (PDF):</label>
+                    <label for="cv">Upload CV (PDF, maks 5MB):</label>
                     <input type="file" id="cv" name="cv" accept=".pdf" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="portofolio">Upload Portofolio (PDF, opsional):</label>
+                    <label for="portofolio">Upload Portofolio (PDF, maks 5MB, opsional):</label>
                     <input type="file" id="portofolio" name="portofolio" accept=".pdf">
                 </div>
 
                 <div class="form-group">
-                    <label for="surat_lamaran">Upload Surat Lamaran (opsional):</label>
+                    <label for="surat_lamaran">Upload Surat Lamaran (maks 5MB, opsional):</label>
                     <input type="file" id="surat_lamaran" name="surat_lamaran">
                 </div>
 
