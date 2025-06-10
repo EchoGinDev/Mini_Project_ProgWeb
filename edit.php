@@ -204,16 +204,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <img src="<?= htmlspecialchars($row['logo']) ?>" alt="Logo" width="100">
                 </div>
             <?php endif; ?>
-
             <div class="form-actions">
-                <button type="submit" class="btn-submit">Simpan</button>
-                <a href="<?= $_SESSION['role'] === 'admin' ? 'admin_menu.php' : 'company_menu.php' ?>" class="btn-cancel">Kembali</a>
+                <button type="submit" class="btn btn-submit">Simpan</button>
+                <button type="button" class="btn btn-cancel" onclick="window.location.href='<?= $_SESSION['role'] === 'admin' ? 'admin_menu.php' : 'company_menu.php' ?>'">Kembali</button>
             </div>
         </form>
     </div>
 </main>
 
-<footer>
-</footer>
+<footer></footer>
 </body>
 </html>

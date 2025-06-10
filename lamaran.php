@@ -189,8 +189,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn-submit">Submit Lamaran</button>
-                    <a href="index.php" class="btn-cancel">Batal</a>
+                    <button type="submit" class="btn btn-submit">Submit</button>
+                    <button type="button" class="btn btn-cancel" onclick="window.location.href='index.php'">Batal</button>
                 </div>
             </form>
         </div>
