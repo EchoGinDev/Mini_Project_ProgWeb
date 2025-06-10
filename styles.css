@@ -177,6 +177,7 @@ main {
 }
 
 .dashboard-section th {
+    padding: 10px 10px;
     background-color: #f5f5f5;
     font-weight: bold;
     color: #333;
@@ -233,7 +234,6 @@ main {
 .btn-submit,
 .add-btn,
 .delete-btn,
-.btn-cancel,
 .lamar-btn,
 .apply-btn {
     background-color: #6610f2;
@@ -254,11 +254,49 @@ main {
 .btn-submit:hover,
 .add-btn:hover,
 .delete-btn:hover,
-.btn-cancel:hover,
 .lamar-btn:hover,
 .apply-btn:hover {
     background-color: #590dd4;
 }
+
+.btn-submit {
+    background-color: #2ecc71;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    border: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+
+}
+
+.btn-submit:hover {
+    background-color: #27ae60;
+}
+
+
+.btn-cancel {
+    background-color: #e74c3c;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    border: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.btn-cancel:hover {
+    background-color: #c0392b;
+}
+
 
 
 
@@ -334,9 +372,6 @@ main {
     font-weight: 600;
     color: #34495e;
 }
-
-
-
 
 
 
@@ -501,11 +536,6 @@ footer {
         flex-direction: column;
         gap: 10px;
     }
-
-    .btn-submit,
-    .btn-cancel {
-        width: 100%;
-    }
 }
 
 /* ========================================
@@ -550,8 +580,8 @@ td:nth-child(5), th:nth-child(5) {
 }
 
 th {
-    background-color: #3498db;
-    color: rgb(26, 26, 26);
+    background-color: #6610f2;
+    color: rgb(255, 255, 255);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
