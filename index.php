@@ -21,17 +21,17 @@ $username_pengguna = $row_user && !empty($row_user['username']) ? $row_user['use
 // Cek role admin (jika butuh)
 $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
-// Ambil input dari form pencarian, gunakan nilai default jika kosong
+// Ambil input dari form pencarian
 $username = $_POST['username'] ?? '';
 $kategori = $_POST['kategori'] ?? '';
 $posisi = $_POST['posisi'] ?? '';
 $jenis = $_POST['jenis'] ?? '';
 $gaji_target = $_POST['gaji_target'] ?? '';
 
-// Mulai query dasar
-$query = "SELECT * FROM jobs WHERE 1=1";
+// Mulai query dasar dan hanya tampilkan lowongan yang belum kadaluarsa
+$query = "SELECT * FROM jobs WHERE batas_lamaran >= CURDATE()";
 
-// Tambahkan filter berdasarkan input form (jika tidak kosong)
+// Tambahkan filter berdasarkan input form
 if ($username !== '') {
     $query .= " AND username LIKE '%" . mysqli_real_escape_string($conn, $username) . "%'";
 }
@@ -44,8 +44,6 @@ if ($posisi !== '') {
 if ($jenis !== '') {
     $query .= " AND jenis LIKE '%" . mysqli_real_escape_string($conn, $jenis) . "%'";
 }
-
-// Filter berdasarkan rentang gaji yang diinput user (jika valid angka)
 if ($gaji_target !== '' && is_numeric($gaji_target)) {
     $gaji_target = intval($gaji_target);
     $query .= " AND gaji_min <= $gaji_target AND gaji_max >= $gaji_target";
@@ -61,11 +59,10 @@ $result = mysqli_query($conn, $query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Portal - Halaman Utama</title>
-    <link rel="stylesheet" href="styles.css"> <!-- CSS eksternal -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- Bagian Header / Navbar -->
 <header>
     <nav class="navbar">
         <a href="index.php">
@@ -81,11 +78,9 @@ $result = mysqli_query($conn, $query);
 </header>
 
 <main>
-    <!-- Form Pencarian -->
     <section class="search-section">
         <h2>Cari Lowongan</h2>
         <form method="post" action="index.php">
-            <!-- Input pencarian -->
             <input type="text" name="username" placeholder="Nama Perusahaan" value="<?= htmlspecialchars($username) ?>">
             <input type="text" name="kategori" placeholder="Kategori Pekerjaan" value="<?= htmlspecialchars($kategori) ?>">
             <input type="text" name="posisi" placeholder="Posisi" value="<?= htmlspecialchars($posisi) ?>">
@@ -95,18 +90,10 @@ $result = mysqli_query($conn, $query);
         </form>
     </section>
 
-    
-
-    <!-- Deskripsi Halaman -->
     <h2>Temukan perusahaan Anda berikutnya</h2>
-    <p>
-        Jelajahi profil perusahaan untuk menemukan tempat kerja yang tepat bagi Anda. 
-        Pelajari tentang pekerjaan, ulasan, budaya perusahaan, dan keuntungan.
-    </p>
-
+    <p>Jelajahi profil perusahaan untuk menemukan tempat kerja yang tepat bagi Anda.</p>
     <hr style="border: 1px solid rgb(39, 39, 39);">
-    
-    <!-- Daftar Lowongan Pekerjaan -->
+
     <section class="job-listings">
         <h1>Daftar Lowongan</h1>
 
@@ -120,17 +107,17 @@ $result = mysqli_query($conn, $query);
                 echo '<p>Posisi: ' . htmlspecialchars($row['posisi']) . '</p>';
                 echo '<p>Jenis: ' . htmlspecialchars($row['jenis']) . '</p>';
                 echo '<p>Gaji: Rp ' . number_format($row['gaji_min'], 0, ',', '.') . ' - Rp ' . number_format($row['gaji_max'], 0, ',', '.') . '</p>';
+                echo '<p>Batas Lamaran: ' . date("d M Y", strtotime($row['batas_lamaran'])) . '</p>';
                 echo '<a class="detail-btn" href="detail.php?id=' . $row['id'] . '">Lihat Detail</a>';
                 echo '</div>';
             }
         } else {
-            echo '<p>Tidak ada lowongan yang sesuai dengan pencarian Anda.</p>';
+            echo '<p>Tidak ada lowongan yang sesuai atau semua lowongan sudah kadaluarsa.</p>';
         }
         ?>
     </section>
 </main>
 
-<!-- Footer -->
 <footer>
     <p>&copy; 2025 Job Portal. All rights reserved.</p>
 </footer>
