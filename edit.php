@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $update = $conn->prepare("UPDATE jobs SET username=?, lokasi=?, kategori=?, posisi=?, jenis=?, gaji_min=?, gaji_max=?, deskripsi=?, logo=?, batas_lamaran=? WHERE id=?");
-    $update->bind_param("sssssiissssi", $username, $lokasi, $kategori, $posisi, $jenis, $gaji_min, $gaji_max, $deskripsi, $logo, $batas_lamaran, $id);
+    $update->bind_param("sssssiisssi", $username, $lokasi, $kategori, $posisi, $jenis, $gaji_min, $gaji_max, $deskripsi, $logo, $batas_lamaran, $id);
 
     if ($update->execute()) {
         $redirect = ($_SESSION['role'] === 'company') ? 'company_menu.php' : 'admin_menu.php';
