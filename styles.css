@@ -13,7 +13,11 @@ body {
 
 /* Logo login (tidak berfungsi karena width 00px) */
 .login-logo {
-    width: 00px; /* Harus diperbaiki, nilai 00px tidak valid */
+    width: 80%; /* Harus diperbaiki, nilai 00px tidak valid */
+}
+
+.logo-detail{
+    width: 80%;
 }
 
 /* Style untuk elemen h1 */
@@ -330,6 +334,11 @@ main {
     font-weight: 600;
     color: #34495e;
 }
+
+
+
+
+
 
 .form-group input,
 .form-group select,

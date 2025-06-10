@@ -58,7 +58,7 @@ if (isset($_GET['id'])) {
 
 <main>
     <section class="job-detail">
-        <img src="<?= htmlspecialchars($row['logo']); ?>" alt="Logo Perusahaan" class="detail-logo">
+        <img src="<?= htmlspecialchars($row['logo']); ?>" alt="Logo Perusahaan" class="logo-detail">
         <h1><?= htmlspecialchars($row['posisi']); ?></h1>
         <h3>Perusahaan: <?= htmlspecialchars($row['username']); ?></h3>
         <p><strong>Kategori:</strong> <?= htmlspecialchars($row['kategori']); ?></p>
