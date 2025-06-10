@@ -10,36 +10,55 @@ if (!isset($_SESSION['email'])) {
 
 $email_pengguna = $_SESSION['email'];
 
-// Cek apakah form disubmit
+// Ambil ID lowongan dari URL
+if (!isset($_GET['id'])) {
+    echo "<script>alert('ID lowongan tidak tersedia.'); window.location.href='index.php';</script>";
+    exit;
+}
+
+$id_lowongan = intval($_GET['id']);
+
+// Ambil ID user dari email
+$get_user = mysqli_query($conn, "SELECT id FROM users WHERE email = '$email_pengguna'");
+if ($user = mysqli_fetch_assoc($get_user)) {
+    $id_user = $user['id'];
+} else {
+    echo "<script>alert('User tidak ditemukan.'); window.location.href='index.php';</script>";
+    exit;
+}
+
+// Cek apakah user sudah pernah melamar lowongan ini
+$cek_duplikat = mysqli_query($conn, "SELECT * FROM lamaran WHERE id_user = '$id_user' AND id_lowongan = '$id_lowongan'");
+if (mysqli_num_rows($cek_duplikat) > 0) {
+    echo "<script>alert('Anda sudah melamar pekerjaan ini sebelumnya.'); window.location.href='index.php';</script>";
+    exit;
+}
+
+
+// Jika form disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ambil data dari form
     $nama = mysqli_real_escape_string($conn, $_POST['nama']);
     $tanggal_lahir = mysqli_real_escape_string($conn, $_POST['tanggal_lahir']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $nomor_hp = mysqli_real_escape_string($conn, $_POST['nomor_hp']);
 
-    // Maksimum ukuran file (5 MB)
     $max_size = 5 * 1024 * 1024;
 
-    // Handle upload file CV
     $cv_name = $_FILES['cv']['name'];
     $cv_tmp = $_FILES['cv']['tmp_name'];
     $cv_size = $_FILES['cv']['size'];
     $cv_folder = "uploads/" . $cv_name;
 
-    // Upload file portofolio (opsional)
     $portofolio_name = $_FILES['portofolio']['name'];
     $portofolio_tmp = $_FILES['portofolio']['tmp_name'];
     $portofolio_size = $_FILES['portofolio']['size'];
     $portofolio_folder = "uploads/" . $portofolio_name;
 
-    // Upload surat lamaran (opsional)
     $surat_name = $_FILES['surat_lamaran']['name'];
     $surat_tmp = $_FILES['surat_lamaran']['tmp_name'];
     $surat_size = $_FILES['surat_lamaran']['size'];
     $surat_folder = "uploads/" . $surat_name;
 
-    // Validasi ukuran file
     if ($cv_size > $max_size) {
         $error = "Ukuran file CV tidak boleh lebih dari 5 MB.";
     } elseif (!empty($portofolio_name) && $portofolio_size > $max_size) {
@@ -47,23 +66,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (!empty($surat_name) && $surat_size > $max_size) {
         $error = "Ukuran file Surat Lamaran tidak boleh lebih dari 5 MB.";
     } else {
-        // Pastikan folder uploads/ ada
         if (!is_dir("uploads")) {
             mkdir("uploads", 0777, true);
         }
 
-        // Pindahkan file yang diupload
         move_uploaded_file($cv_tmp, $cv_folder);
-        if (!empty($portofolio_name)) {
-            move_uploaded_file($portofolio_tmp, $portofolio_folder);
-        }
-        if (!empty($surat_name)) {
-            move_uploaded_file($surat_tmp, $surat_folder);
-        }
+        if (!empty($portofolio_name)) move_uploaded_file($portofolio_tmp, $portofolio_folder);
+        if (!empty($surat_name)) move_uploaded_file($surat_tmp, $surat_folder);
 
-        // Masukkan data ke database
-        $sql = "INSERT INTO lamaran (nama, tanggal_lahir, email, nomor_hp, cv, portofolio, surat_lamaran)
-                VALUES ('$nama', '$tanggal_lahir', '$email', '$nomor_hp', '$cv_name', '$portofolio_name', '$surat_name')";
+        $sql = "INSERT INTO lamaran 
+                (nama, tanggal_lahir, email, nomor_hp, cv, portofolio, surat_lamaran, id_user, id_lowongan)
+                VALUES 
+                ('$nama', '$tanggal_lahir', '$email', '$nomor_hp', '$cv_name', '$portofolio_name', '$surat_name', '$id_user', '$id_lowongan')";
 
         if (mysqli_query($conn, $sql)) {
             echo "<script>alert('Lamaran berhasil dikirim!'); window.location.href='index.php';</script>";
@@ -73,7 +87,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="id">

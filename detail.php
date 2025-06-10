@@ -2,7 +2,6 @@
 session_start();
 include 'koneksi.php';
 
-// Cek apakah user sudah login
 if (!isset($_SESSION['email'])) {
     header("Location: login.php");
     exit;
@@ -10,14 +9,19 @@ if (!isset($_SESSION['email'])) {
 
 $email_pengguna = $_SESSION['email'];
 
-// Cek apakah parameter ID diberikan
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
+
     $result = mysqli_query($conn, "SELECT * FROM jobs WHERE id = $id");
 
     if ($row = mysqli_fetch_assoc($result)) {
-        // Cek apakah user sudah pernah melamar lowongan ini
-        $check_lamaran = mysqli_query($conn, "SELECT * FROM lamaran WHERE email = '$email_pengguna' AND id_lowongan = '$id'");
+        // Ambil ID user dari email
+        $query_user = mysqli_query($conn, "SELECT id FROM users WHERE email = '$email_pengguna'");
+        $data_user = mysqli_fetch_assoc($query_user);
+        $id_user = $data_user['id'] ?? 0;
+
+        // Cek apakah sudah melamar
+        $check_lamaran = mysqli_query($conn, "SELECT * FROM lamaran WHERE id_user = '$id_user' AND id_lowongan = '$id'");
         $sudah_melamar = mysqli_num_rows($check_lamaran) > 0;
     } else {
         echo "Lowongan tidak ditemukan.";
@@ -34,7 +38,7 @@ if (isset($_GET['id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Lowongan - <?php echo htmlspecialchars($row['posisi']); ?></title>
+    <title>Detail Lowongan - <?= htmlspecialchars($row['posisi']); ?></title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -46,7 +50,7 @@ if (isset($_GET['id'])) {
         <ul class="nav-links">
             <li><a href="#">About</a></li>
             <li><a href="index.php">Home</a></li>
-            <li><span style="color: white; margin-right: 10px;"><?php echo htmlspecialchars($email_pengguna); ?></span></li>
+            <li><span style="color: white;"><?= htmlspecialchars($email_pengguna); ?></span></li>
             <li><a href="logout.php" class="contact-btn">Logout</a></li>
         </ul>
     </nav>
@@ -54,21 +58,20 @@ if (isset($_GET['id'])) {
 
 <main>
     <section class="job-detail">
-        <img src="<?php echo htmlspecialchars($row['logo']); ?>" alt="Logo Perusahaan" class="detail-logo">
-
-        <h1><?php echo htmlspecialchars($row['posisi']); ?></h1>
-        <h3>Perusahaan: <?php echo htmlspecialchars($row['username']); ?></h3>
-        <p><strong>Kategori:</strong> <?php echo htmlspecialchars($row['kategori']); ?></p>
-        <p><strong>Jenis Pekerjaan:</strong> <?php echo htmlspecialchars($row['jenis']); ?></p>
+        <img src="<?= htmlspecialchars($row['logo']); ?>" alt="Logo Perusahaan" class="detail-logo">
+        <h1><?= htmlspecialchars($row['posisi']); ?></h1>
+        <h3>Perusahaan: <?= htmlspecialchars($row['username']); ?></h3>
+        <p><strong>Kategori:</strong> <?= htmlspecialchars($row['kategori']); ?></p>
+        <p><strong>Jenis Pekerjaan:</strong> <?= htmlspecialchars($row['jenis']); ?></p>
         <p><strong>Gaji:</strong> Rp <?= number_format($row['gaji_min'], 0, ',', '.') ?> - Rp <?= number_format($row['gaji_max'], 0, ',', '.') ?></p>
-        <p><strong>Lokasi:</strong> <?php echo htmlspecialchars($row['lokasi'] ?? 'Tidak disebutkan'); ?></p>
+        <p><strong>Lokasi:</strong> <?= htmlspecialchars($row['lokasi'] ?? 'Tidak disebutkan'); ?></p>
         <p><strong>Deskripsi Pekerjaan:</strong></p>
-        <p><?php echo nl2br(htmlspecialchars($row['deskripsi'])); ?></p>
+        <p><?= nl2br(htmlspecialchars($row['deskripsi'])); ?></p>
 
         <?php if ($sudah_melamar): ?>
             <p style="color: red; font-weight: bold;">Anda sudah pernah melamar lowongan ini!</p>
         <?php else: ?>
-            <a href="lamaran.php?id=<?php echo $row['id']; ?>" class="apply-btn">Lamar Pekerjaan Ini</a>
+            <a href="lamaran.php?id=<?= $row['id']; ?>" class="apply-btn">Lamar Pekerjaan Ini</a>
         <?php endif; ?>
     </section>
 </main>
