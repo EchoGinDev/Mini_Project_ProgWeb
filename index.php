@@ -53,14 +53,10 @@ if ($gaji_target !== '' && is_numeric($gaji_target)) {
 // Tambahkan ORDER BY di akhir
 $query .= " ORDER BY batas_lamaran ASC";
 
-// Eksekusi query
-$result = mysqli_query($conn, $query);
-
 // Debugging jika error
 if (!$result) {
     die("Query Error: " . mysqli_error($conn));
 }
-
 
 // Eksekusi query lowongan
 $result = mysqli_query($conn, $query);
