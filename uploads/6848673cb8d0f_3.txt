@@ -1,0 +1,11 @@
+def hitung_pantulan_dan_lintasan(n):
+    pantulan = 0
+    lintasan = n  # jatuh pertama kali
+    tinggi = n * 0.7
+
+    while tinggi >= 0.1:
+        lintasan += tinggi * 2  # naik dan turun
+        tinggi *= 0.7
+        pantulan += 1
+
+    return pantulan, lintasan

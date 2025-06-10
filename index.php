@@ -49,7 +49,7 @@ if ($gaji_target !== '' && is_numeric($gaji_target)) {
     $query .= " AND gaji_min <= $gaji_target AND gaji_max >= $gaji_target";
 }
 
-// Eksekusi query
+// Eksekusi query jobs
 $result = mysqli_query($conn, $query);
 
 // === Dashboard Total Lowongan ===
@@ -61,6 +61,22 @@ $query_total_lowongan = "
     ORDER BY total_lowongan DESC
 ";
 $result_total_lowongan = mysqli_query($conn, $query_total_lowongan);
+
+// === Ambil Total Pelamar per Lowongan ===
+$query_total_pelamar = "
+    SELECT id_lowongan, COUNT(*) AS total_pelamar
+    FROM lamaran
+    GROUP BY id_lowongan
+";
+$result_total_pelamar = mysqli_query($conn, $query_total_pelamar);
+
+// Simpan total pelamar dalam array asosiatif (key: id_lowongan)
+$total_pelamar_per_job = [];
+if ($result_total_pelamar && mysqli_num_rows($result_total_pelamar) > 0) {
+    while ($row_pelamar = mysqli_fetch_assoc($result_total_pelamar)) {
+        $total_pelamar_per_job[$row_pelamar['id_lowongan']] = $row_pelamar['total_pelamar'];
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -136,7 +152,7 @@ $result_total_lowongan = mysqli_query($conn, $query_total_lowongan);
             </thead>
             <tbody>
                 <?php
-                if (mysqli_num_rows($result_total_lowongan) > 0) {
+                if ($result_total_lowongan && mysqli_num_rows($result_total_lowongan) > 0) {
                     while ($row_total = mysqli_fetch_assoc($result_total_lowongan)) {
                         echo '<tr>';
                         echo '<td>' . htmlspecialchars($row_total['username']) . '</td>';
@@ -159,7 +175,7 @@ $result_total_lowongan = mysqli_query($conn, $query_total_lowongan);
         <h1>Daftar Lowongan</h1>
 
         <?php
-        if (mysqli_num_rows($result) > 0) {
+        if ($result && mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
                 echo '<div class="job-item">';
                 echo '<img src="' . htmlspecialchars($row['logo']) . '" alt="Logo Perusahaan">';
@@ -169,6 +185,12 @@ $result_total_lowongan = mysqli_query($conn, $query_total_lowongan);
                 echo '<p>Jenis: ' . htmlspecialchars($row['jenis']) . '</p>';
                 echo '<p>Gaji: Rp ' . number_format($row['gaji_min'], 0, ',', '.') . ' - Rp ' . number_format($row['gaji_max'], 0, ',', '.') . '</p>';
                 echo '<p>Batas Lamaran: ' . date("d M Y", strtotime($row['batas_lamaran'])) . '</p>';
+
+                // Ambil total pelamar dari array
+                $job_id = $row['id'];
+                $jumlah_pelamar = $total_pelamar_per_job[$job_id] ?? 0;
+                echo '<p>Total Pelamar: ' . $jumlah_pelamar . '</p>';
+
                 echo '<a class="detail-btn" href="detail.php?id=' . $row['id'] . '">Lihat Detail</a>';
                 echo '</div>';
             }
