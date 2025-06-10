@@ -29,7 +29,8 @@ $jenis = $_POST['jenis'] ?? '';
 $gaji_target = $_POST['gaji_target'] ?? '';
 
 // Mulai query dasar dan hanya tampilkan lowongan yang belum kadaluarsa, diurutkan dari batas_lamaran terdekat
-$query = "SELECT * FROM jobs WHERE batas_lamaran >= CURDATE() ORDER BY batas_lamaran ASC";
+// Mulai query dasar (tanpa ORDER BY)
+$query = "SELECT * FROM jobs WHERE batas_lamaran >= CURDATE()";
 
 // Tambahkan filter berdasarkan input form
 if ($username !== '') {
@@ -48,6 +49,18 @@ if ($gaji_target !== '' && is_numeric($gaji_target)) {
     $gaji_target = intval($gaji_target);
     $query .= " AND gaji_min <= $gaji_target AND gaji_max >= $gaji_target";
 }
+
+// Tambahkan ORDER BY di akhir
+$query .= " ORDER BY batas_lamaran ASC";
+
+// Eksekusi query
+$result = mysqli_query($conn, $query);
+
+// Debugging jika error
+if (!$result) {
+    die("Query Error: " . mysqli_error($conn));
+}
+
 
 // Eksekusi query lowongan
 $result = mysqli_query($conn, $query);
