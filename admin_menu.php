@@ -93,6 +93,7 @@ $result = mysqli_query($conn, $query);
         <h2>Kelola Lowongan</h2>
         <a href="tambah.php" class="add-btn">Tambah Lowongan Baru</a>
         <a href="registcompany.php" class="add-btn">Buat Akun Company</a>
+        <a href="pelamarList.php" class="add-btn">Lihat Pelamar</a>
     </section>
 
     <hr style="border: 1px solid rgb(39, 39, 39);">
