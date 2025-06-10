@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 07, 2025 at 08:21 PM
+-- Generation Time: Jun 10, 2025 at 04:47 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -68,15 +68,20 @@ CREATE TABLE `lamaran` (
   `nomor_hp` varchar(20) DEFAULT NULL,
   `cv` varchar(255) DEFAULT NULL,
   `portofolio` varchar(255) DEFAULT NULL,
-  `surat_lamaran` varchar(255) DEFAULT NULL
+  `surat_lamaran` varchar(255) DEFAULT NULL,
+  `id_user` int(11) DEFAULT NULL,
+  `id_lowongan` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `lamaran`
 --
 
-INSERT INTO `lamaran` (`id`, `nama`, `tanggal_lahir`, `email`, `nomor_hp`, `cv`, `portofolio`, `surat_lamaran`) VALUES
-(1, 'Efrant Emmanuel', '2005-04-09', 'efrantemmanuel13@gmail.com', '082129167863', '#9 PHP-2.pdf', '#10 PHP-3.pdf', '#11 PHP-4.pdf');
+INSERT INTO `lamaran` (`id`, `nama`, `tanggal_lahir`, `email`, `nomor_hp`, `cv`, `portofolio`, `surat_lamaran`, `id_user`, `id_lowongan`) VALUES
+(1, 'Efrant Emmanuel', '2005-04-09', 'efrantemmanuel13@gmail.com', '082129167863', '#9 PHP-2.pdf', '#10 PHP-3.pdf', '#11 PHP-4.pdf', NULL, NULL),
+(4, 'Efrant Emmanuel', '2025-06-05', 'efrant@gmail.com', '082129167863', 'TugasEtprof(71230973).pdf', 'TugasEtprof(71230973).pdf', 'WhatsApp Image 2025-05-02 at 22.06.45_d9b1846e.jpg', NULL, NULL),
+(5, 'Efrant Emmanuel', '2025-06-04', 'efrant@gmail.com', '082129167863', 'TugasEtprof(71230973).pdf', 'TugasEtprof(71230973).pdf', 'WhatsApp Image 2025-05-02 at 22.06.45_d9b1846e.jpg', NULL, NULL),
+(7, 'Efrant Emmanuel', '2025-06-03', 'efrant@gmail.com', '082129167863', 'TugasEtprof(71230973).pdf', 'TugasEtprof(71230973).pdf', 'WhatsApp Image 2025-05-02 at 22.06.45_d9b1846e.jpg', 2, 1);
 
 -- --------------------------------------------------------
 
@@ -118,7 +123,9 @@ ALTER TABLE `jobs`
 -- Indexes for table `lamaran`
 --
 ALTER TABLE `lamaran`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_lamaran_user` (`id_user`),
+  ADD KEY `fk_lamaran_lowongan` (`id_lowongan`);
 
 --
 -- Indexes for table `users`
@@ -141,13 +148,24 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `lamaran`
 --
 ALTER TABLE `lamaran`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `lamaran`
+--
+ALTER TABLE `lamaran`
+  ADD CONSTRAINT `fk_lamaran_lowongan` FOREIGN KEY (`id_lowongan`) REFERENCES `jobs` (`id`),
+  ADD CONSTRAINT `fk_lamaran_user` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
