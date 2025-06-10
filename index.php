@@ -51,6 +51,16 @@ if ($gaji_target !== '' && is_numeric($gaji_target)) {
 
 // Eksekusi query
 $result = mysqli_query($conn, $query);
+
+// === Dashboard Total Lowongan ===
+$query_total_lowongan = "
+    SELECT username, COUNT(*) AS total_lowongan
+    FROM jobs
+    WHERE batas_lamaran >= CURDATE()
+    GROUP BY username
+    ORDER BY total_lowongan DESC
+";
+$result_total_lowongan = mysqli_query($conn, $query_total_lowongan);
 ?>
 
 <!DOCTYPE html>
@@ -60,6 +70,30 @@ $result = mysqli_query($conn, $query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Portal - Halaman Utama</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .dashboard-section {
+            padding: 20px;
+            background-color: #f8f8f8;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+        .dashboard-section h2 {
+            margin-bottom: 10px;
+        }
+        .dashboard-section table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        .dashboard-section th, .dashboard-section td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        .dashboard-section th {
+            background-color: #e3e3e3;
+        }
+    </style>
 </head>
 <body>
 
@@ -88,6 +122,33 @@ $result = mysqli_query($conn, $query);
             <input type="number" name="gaji_target" placeholder="Gaji yang Diinginkan" value="<?= htmlspecialchars($gaji_target) ?>">
             <button type="submit">Cari</button>
         </form>
+    </section>
+
+    <!-- Dashboard Total Lowongan -->
+    <section class="dashboard-section">
+        <h2>Dashboard: Total Lowongan per Perusahaan</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama Perusahaan</th>
+                    <th>Total Lowongan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                if (mysqli_num_rows($result_total_lowongan) > 0) {
+                    while ($row_total = mysqli_fetch_assoc($result_total_lowongan)) {
+                        echo '<tr>';
+                        echo '<td>' . htmlspecialchars($row_total['username']) . '</td>';
+                        echo '<td>' . htmlspecialchars($row_total['total_lowongan']) . '</td>';
+                        echo '</tr>';
+                    }
+                } else {
+                    echo '<tr><td colspan="2">Belum ada data lowongan.</td></tr>';
+                }
+                ?>
+            </tbody>
+        </table>
     </section>
 
     <h2>Temukan perusahaan Anda berikutnya</h2>
