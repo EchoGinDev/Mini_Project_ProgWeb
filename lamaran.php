@@ -10,8 +10,29 @@ if (!isset($_SESSION['email'])) {
 
 $email_pengguna = $_SESSION['email'];
 
+// Ambil id_user dari tabel users
+$query_user = "SELECT id FROM users WHERE email = '$email_pengguna'";
+$result_user = mysqli_query($conn, $query_user);
+$row_user = mysqli_fetch_assoc($result_user);
+
+if (!$row_user) {
+    echo "<script>alert('User tidak ditemukan.'); window.location.href='login.php';</script>";
+    exit;
+}
+
+$id_user = $row_user['id'];
+
 // Cek apakah form disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Cek apakah user sudah pernah melamar
+    $check_query = "SELECT id FROM lamaran WHERE id_user = '$id_user'";
+    $check_result = mysqli_query($conn, $check_query);
+
+    if (mysqli_num_rows($check_result) > 0) {
+        echo "<script>alert('Anda sudah pernah mengirimkan lamaran.'); window.location.href='index.php';</script>";
+        exit;
+    }
+
     // Ambil data dari form
     $nama = mysqli_real_escape_string($conn, $_POST['nama']);
     $tanggal_lahir = mysqli_real_escape_string($conn, $_POST['tanggal_lahir']);
@@ -61,9 +82,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             move_uploaded_file($surat_tmp, $surat_folder);
         }
 
-        // Masukkan data ke database
-        $sql = "INSERT INTO lamaran (nama, tanggal_lahir, email, nomor_hp, cv, portofolio, surat_lamaran)
-                VALUES ('$nama', '$tanggal_lahir', '$email', '$nomor_hp', '$cv_name', '$portofolio_name', '$surat_name')";
+        // Masukkan data ke database, sertakan id_user
+        $sql = "INSERT INTO lamaran (id_user, nama, tanggal_lahir, email, nomor_hp, cv, portofolio, surat_lamaran)
+                VALUES ('$id_user', '$nama', '$tanggal_lahir', '$email', '$nomor_hp', '$cv_name', '$portofolio_name', '$surat_name')";
 
         if (mysqli_query($conn, $sql)) {
             echo "<script>alert('Lamaran berhasil dikirim!'); window.location.href='index.php';</script>";
@@ -73,7 +94,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="id">

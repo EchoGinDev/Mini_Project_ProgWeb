@@ -10,15 +10,27 @@ if (!isset($_SESSION['email'])) {
 
 $email_pengguna = $_SESSION['email'];
 
+// Cari ID user yang login
+$result_user = mysqli_query($conn, "SELECT id, username FROM users WHERE email = '$email_pengguna'");
+$user_data = mysqli_fetch_assoc($result_user);
+$id_user_login = $user_data['id'];
+
 // Cek apakah parameter ID diberikan
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
-    $result = mysqli_query($conn, "SELECT * FROM jobs WHERE id = $id");
 
+    // Ambil detail lowongan berdasarkan ID
+    $result = mysqli_query($conn, "SELECT * FROM jobs WHERE id = $id");
     if ($row = mysqli_fetch_assoc($result)) {
-        // Cek apakah user sudah pernah melamar lowongan ini
-        $check_lamaran = mysqli_query($conn, "SELECT * FROM lamaran WHERE email = '$email_pengguna' AND id_lowongan = '$id'");
+
+        // Cek apakah user sudah pernah melamar ke lowongan ini
+        $check_lamaran = mysqli_query($conn, "
+            SELECT * FROM lamaran 
+            WHERE id_lowongan = '$id' 
+              AND id_user = '$id_user_login'
+        ");
         $sudah_melamar = mysqli_num_rows($check_lamaran) > 0;
+
     } else {
         echo "Lowongan tidak ditemukan.";
         exit;
@@ -28,6 +40,7 @@ if (isset($_GET['id'])) {
     exit;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">
@@ -66,7 +79,7 @@ if (isset($_GET['id'])) {
         <p><?php echo nl2br(htmlspecialchars($row['deskripsi'])); ?></p>
 
         <?php if ($sudah_melamar): ?>
-            <p style="color: red; font-weight: bold;">Anda sudah pernah melamar lowongan ini!</p>
+            <p style="color: red; font-weight: bold;">Anda sudah pernah melamar LOWONGAN ini!</p>
         <?php else: ?>
             <a href="lamaran.php?id=<?php echo $row['id']; ?>" class="apply-btn">Lamar Pekerjaan Ini</a>
         <?php endif; ?>
