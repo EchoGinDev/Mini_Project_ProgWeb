@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Validasi input wajib
-    $required_fields = ['lokasi', 'kategori', 'posisi', 'jenis', 'gaji_min', 'gaji_max', 'deskripsi'];
+    $required_fields = ['lokasi', 'kategori', 'posisi', 'jenis', 'gaji_min', 'gaji_max', 'deskripsi', 'batas_lamaran'];
     foreach ($required_fields as $field) {
         if (empty($_POST[$field])) {
             die("<script>alert('$field wajib diisi.'); history.back();</script>");
@@ -52,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $gaji_min = (int)$_POST['gaji_min'];
     $gaji_max = (int)$_POST['gaji_max'];
     $deskripsi = mysqli_real_escape_string($conn, $_POST['deskripsi']);
+    $batas_lamaran = $_POST['batas_lamaran']; // Sudah berupa format YYYY-MM-DD dari input type="date"
 
     // Handle upload logo
     $logo = null;
@@ -82,9 +83,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Insert ke database dengan prepared statement
-    $stmt = $conn->prepare("INSERT INTO jobs (username, lokasi, kategori, posisi, jenis, gaji_min, gaji_max, deskripsi, logo) 
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssiiss", $username, $lokasi, $kategori, $posisi, $jenis, $gaji_min, $gaji_max, $deskripsi, $logo);
+    $stmt = $conn->prepare("INSERT INTO jobs (username, lokasi, kategori, posisi, jenis, gaji_min, gaji_max, deskripsi, logo, batas_lamaran) 
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssiisss", $username, $lokasi, $kategori, $posisi, $jenis, $gaji_min, $gaji_max, $deskripsi, $logo, $batas_lamaran);
     
     if ($stmt->execute()) {
         $redirect = ($_SESSION['role'] === 'company') ? 'company_menu.php' : 'admin_menu.php';
@@ -96,8 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-<!-- Bagian HTML tetap sama seperti sebelumnya -->
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -106,90 +105,95 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <nav class="navbar">
+<header>
+    <nav class="navbar">
+        <?php if ($_SESSION['role'] === 'admin'): ?>
+            <a href="admin_menu.php">
+        <?php else: ?>
+            <a href="company_menu.php">
+        <?php endif; ?>
+            <img class="logo" src="images/navbarLogo.png" alt="Logo Perusahaan">
+        </a>
+        <ul class="nav-links">
+            <li><a href="<?=$_SESSION['role']==='admin' ? 'admin_menu.php' : 'company_menu.php' ?>">Dashboard</a></li>
+            <li><a href="logout.php" class="contact-btn">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <div class="form-box">
+        <h2>Tambah Lowongan Baru</h2>
+
+        <form method="POST" enctype="multipart/form-data">
             <?php if ($_SESSION['role'] === 'admin'): ?>
-                <a href="admin_menu.php">
-            <?php else: ?>
-                <a href="company_menu.php">
+            <div class="form-group">
+                <label for="username">Nama Perusahaan:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
             <?php endif; ?>
-                <img class="logo" src="images/navbarLogo.png" alt="Logo Perusahaan">
-            </a>
-            <ul class="nav-links">
-                <li><a href="<?=$_SESSION['role']==='admin' ? 'admin_menu.php' : 'company_menu.php' ?>">Dashboard</a></li>
-                <li><a href="logout.php" class="contact-btn">Logout</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <main>
-        <div class="form-box">
-            <h2>Tambah Lowongan Baru</h2>
+            <div class="form-group">
+                <label for="lokasi">Lokasi:</label>
+                <input type="text" id="lokasi" name="lokasi" required>
+            </div>
 
-            <form method="POST" enctype="multipart/form-data">
-                <?php if ($_SESSION['role'] === 'admin'): ?>
-                <div class="form-group">
-                    <label for="username">Nama Perusahaan:</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <?php endif; ?>
+            <div class="form-group">
+                <label for="kategori">Kategori:</label>
+                <input type="text" id="kategori" name="kategori" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="lokasi">Lokasi:</label>
-                    <input type="text" id="lokasi" name="lokasi" required>
-                </div>
+            <div class="form-group">
+                <label for="posisi">Posisi:</label>
+                <input type="text" id="posisi" name="posisi" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="kategori">Kategori:</label>
-                    <input type="text" id="kategori" name="kategori" required>
-                </div>
+            <div class="form-group">
+                <label for="jenis">Jenis Pekerjaan:</label>
+                <select id="jenis" name="jenis" required>
+                    <option value="">-- Pilih Jenis Pekerjaan --</option>
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Freelance">Freelance</option>
+                </select>
+            </div>
 
-                <div class="form-group">
-                    <label for="posisi">Posisi:</label>
-                    <input type="text" id="posisi" name="posisi" required>
-                </div>
+            <div class="form-group">
+                <label for="gaji_min">Gaji Minimum:</label>
+                <input type="number" id="gaji_min" name="gaji_min" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="jenis">Jenis Pekerjaan:</label>
-                    <select id="jenis" name="jenis" required>
-                        <option value="">-- Pilih Jenis Pekerjaan --</option>
-                        <option value="Full-time">Full-time</option>
-                        <option value="Part-time">Part-time</option>
-                        <option value="Remote">Remote</option>
-                        <option value="Freelance">Freelance</option>
-                    </select>
-                </div>
+            <div class="form-group">
+                <label for="gaji_max">Gaji Maksimum:</label>
+                <input type="number" id="gaji_max" name="gaji_max" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="gaji_min">Gaji Minimum:</label>
-                    <input type="number" id="gaji_min" name="gaji_min" required>
-                </div>
+            <div class="form-group">
+                <label for="batas_lamaran">Batas Lamaran:</label>
+                <input type="date" id="batas_lamaran" name="batas_lamaran" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="gaji_max">Gaji Maksimum:</label>
-                    <input type="number" id="gaji_max" name="gaji_max" required>
-                </div>
+            <div class="form-group">
+                <label for="deskripsi">Deskripsi Pekerjaan:</label>
+                <textarea id="deskripsi" name="deskripsi" required></textarea>
+            </div>
 
-                <div class="form-group">
-                    <label for="deskripsi">Deskripsi Pekerjaan:</label>
-                    <textarea id="deskripsi" name="deskripsi" required></textarea>
-                </div>
+            <div class="form-group">
+                <label for="logo">Upload Logo (JPG/PNG):</label>
+                <input type="file" id="logo" name="logo" accept=".jpg,.jpeg,.png">
+            </div>
 
-                <div class="form-group">
-                    <label for="logo">Upload Logo (JPG/PNG):</label>
-                    <input type="file" id="logo" name="logo" accept=".jpg,.jpeg,.png">
-                </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Simpan</button>
+                <a href="<?=$_SESSION['role']==='admin' ? 'admin_menu.php' : 'company_menu.php' ?>" class="btn-cancel">Kembali</a>
+            </div>
+        </form>
+    </div>
+</main>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-submit">Simpan</button>
-                    <a href="<?=$_SESSION['role']==='admin' ? 'admin_menu.php' : 'company_menu.php' ?>" class="btn-cancel">Kembali</a>
-                </div>
-            </form>
-        </div>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 Job Portal. All rights reserved.</p>
-    </footer>
+<footer>
+    <p>&copy; 2025 Job Portal. All rights reserved.</p>
+</footer>
 </body>
 </html>

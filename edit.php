@@ -15,7 +15,6 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = intval($_GET['id']);
 $username = '';
 
-// Ambil data username jika company
 if ($_SESSION['role'] === 'company') {
     if (!isset($_SESSION['email'])) {
         die("<script>alert('Sesi tidak valid. Silakan login kembali.'); window.location='logout.php';</script>");
@@ -37,7 +36,6 @@ if ($_SESSION['role'] === 'company') {
     $stmt = $conn->prepare("SELECT * FROM jobs WHERE id = ? AND username = ?");
     $stmt->bind_param("is", $id, $username);
 } else {
-    // admin
     $stmt = $conn->prepare("SELECT * FROM jobs WHERE id = ?");
     $stmt->bind_param("i", $id);
 }
@@ -58,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $username = mysqli_real_escape_string($conn, $_POST['username']);
     }
 
-    $required_fields = ['lokasi', 'kategori', 'posisi', 'jenis', 'gaji_min', 'gaji_max', 'deskripsi'];
+    $required_fields = ['lokasi', 'kategori', 'posisi', 'jenis', 'gaji_min', 'gaji_max', 'deskripsi', 'batas_lamaran'];
     foreach ($required_fields as $field) {
         if (empty($_POST[$field])) {
             die("<script>alert('$field wajib diisi.'); history.back();</script>");
@@ -72,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gaji_min = (int)$_POST['gaji_min'];
     $gaji_max = (int)$_POST['gaji_max'];
     $deskripsi = mysqli_real_escape_string($conn, $_POST['deskripsi']);
+    $batas_lamaran = mysqli_real_escape_string($conn, $_POST['batas_lamaran']);
 
     $logo = $row['logo'];
 
@@ -101,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    $update = $conn->prepare("UPDATE jobs SET username=?, lokasi=?, kategori=?, posisi=?, jenis=?, gaji_min=?, gaji_max=?, deskripsi=?, logo=? WHERE id=?");
-    $update->bind_param("sssssiissi", $username, $lokasi, $kategori, $posisi, $jenis, $gaji_min, $gaji_max, $deskripsi, $logo, $id);
+    $update = $conn->prepare("UPDATE jobs SET username=?, lokasi=?, kategori=?, posisi=?, jenis=?, gaji_min=?, gaji_max=?, deskripsi=?, logo=?, batas_lamaran=? WHERE id=?");
+    $update->bind_param("sssssiissssi", $username, $lokasi, $kategori, $posisi, $jenis, $gaji_min, $gaji_max, $deskripsi, $logo, $batas_lamaran, $id);
 
     if ($update->execute()) {
         $redirect = ($_SESSION['role'] === 'company') ? 'company_menu.php' : 'admin_menu.php';
@@ -190,6 +189,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="form-group">
+                <label for="batas_lamaran">Batas Lamaran:</label>
+                <input type="date" id="batas_lamaran" name="batas_lamaran" value="<?= htmlspecialchars($row['batas_lamaran']) ?>" required>
+            </div>
+
+            <div class="form-group">
                 <label for="logo">Upload Logo (JPG/PNG):</label>
                 <input type="file" id="logo" name="logo" accept=".jpg,.jpeg,.png">
             </div>
@@ -210,3 +214,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </main>
 
 <footer>
+</footer>
+</body>
+</html>

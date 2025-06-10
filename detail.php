@@ -65,6 +65,7 @@ if (isset($_GET['id'])) {
         <p><strong>Jenis Pekerjaan:</strong> <?= htmlspecialchars($row['jenis']); ?></p>
         <p><strong>Gaji:</strong> Rp <?= number_format($row['gaji_min'], 0, ',', '.') ?> - Rp <?= number_format($row['gaji_max'], 0, ',', '.') ?></p>
         <p><strong>Lokasi:</strong> <?= htmlspecialchars($row['lokasi'] ?? 'Tidak disebutkan'); ?></p>
+        <p><strong>Batas Lamaran:</strong> <?= htmlspecialchars($row['batas_lamaran']); ?></p>
         <p><strong>Deskripsi Pekerjaan:</strong></p>
         <p><?= nl2br(htmlspecialchars($row['deskripsi'])); ?></p>
 
